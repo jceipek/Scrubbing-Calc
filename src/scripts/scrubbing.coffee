@@ -30,7 +30,20 @@ $ () ->
     y: null
 
   selectedElement = null
+  activeStatement = $('#statement')
   currElement = null
+
+  # Taken from the Raphael clock example
+  # paper = Raphael(10, 50, 1000, 1000)
+  # R = 50
+  # alpha = 180
+  # a = (90 - alpha) * Math.PI / 180
+  # x = 300 + R * Math.cos(a)
+  # y = 300 - R * Math.sin(a)
+  # circle = paper.path([["M", 300, 300 - R], ["A", R, R, 0, + (alpha > 180), 1, x, y]])
+  # circle.attr('stroke-width',20)
+  # circle.attr('stroke','#f00')
+  # circle.attr('fill', 'none')
 
   deleteCurrElementAndBacktrack = () ->
     elementToDelete = currElement 
@@ -115,7 +128,7 @@ $ () ->
   newNumber = () ->
     e = document.createElement('span')
     $(e).addClass('number')
-    $(e).appendTo($('.computation'))
+    $(e).appendTo(activeStatement)
     
     $(e).mousedown (e) ->
       this.preventDefault
@@ -129,7 +142,7 @@ $ () ->
     e = document.createElement('span')
     $(e).html(op)
     $(e).addClass('operator')
-    $(e).appendTo($('.computation'))
+    $(e).appendTo(activeStatement)
     
     $(e).mousedown (e) ->
       this.preventDefault
@@ -142,7 +155,7 @@ $ () ->
   newComment = () ->
     e = document.createElement('span')
     $(e).addClass('comment')
-    $(e).appendTo($('.computation'))
+    $(e).appendTo(activeStatement)
     
     $(e).mousedown (e) ->
       this.preventDefault

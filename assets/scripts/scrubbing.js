@@ -2,7 +2,7 @@
 (function() {
 
   $(function() {
-    var KEY_CODE, clickPos, currElement, deleteCurrElementAndBacktrack, newComment, newNumber, newOperator, selectedElement;
+    var KEY_CODE, activeStatement, clickPos, currElement, deleteCurrElementAndBacktrack, newComment, newNumber, newOperator, selectedElement;
     KEY_CODE = {
       'min_num': 48,
       'max_num': 57,
@@ -33,6 +33,7 @@
       y: null
     };
     selectedElement = null;
+    activeStatement = $('#statement');
     currElement = null;
     deleteCurrElementAndBacktrack = function() {
       var elementToDelete;
@@ -135,7 +136,7 @@
       var e;
       e = document.createElement('span');
       $(e).addClass('number');
-      $(e).appendTo($('.computation'));
+      $(e).appendTo(activeStatement);
       $(e).mousedown(function(e) {
         this.preventDefault;
         selectedElement = this;
@@ -150,7 +151,7 @@
       e = document.createElement('span');
       $(e).html(op);
       $(e).addClass('operator');
-      $(e).appendTo($('.computation'));
+      $(e).appendTo(activeStatement);
       $(e).mousedown(function(e) {
         this.preventDefault;
         selectedElement = this;
@@ -164,7 +165,7 @@
       var e;
       e = document.createElement('span');
       $(e).addClass('comment');
-      $(e).appendTo($('.computation'));
+      $(e).appendTo(activeStatement);
       $(e).mousedown(function(e) {
         this.preventDefault;
         selectedElement = this;
