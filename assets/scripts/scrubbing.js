@@ -2,7 +2,7 @@
 (function() {
 
   $(function() {
-    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currElement, deleteCurrElementAndBacktrack, evaluateSolution, getEquationTokens, newComment, newNumber, newOperator, selectedElement, statementProblem, updateComp;
+    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currElement, deleteCurrElementAndBacktrack, evaluateSolution, getEquationTokens, getLastNonCommentElement, newComment, newNumber, newOperator, selectedElement, statementProblem, updateComp;
     KEY_CODE = {
       'min_num': 48,
       'max_num': 57,
@@ -35,6 +35,24 @@
     selectedElement = null;
     activeStatement = $('#statement');
     currElement = null;
+    getLastNonCommentElement = function() {
+      var lastNonComment;
+      if ($(currElement).hasClass('number') || $(currElement).hasClass('operator') || currElement === null) {
+        console.log('A');
+        return currElement;
+      }
+      lastNonComment = null;
+      while (!(lastNonComment != null) || $(lastNonComment).hasClass('comment')) {
+        lastNonComment = currElement.previousSibling;
+      }
+      if ($(lastNonComment).hasClass('number') || $(lastNonComment).hasClass('operator')) {
+        console.log('B');
+        return lastNonComment;
+      } else {
+        console.log('C');
+        return null;
+      }
+    };
     deleteCurrElementAndBacktrack = function() {
       var elementToDelete;
       elementToDelete = currElement;
@@ -81,13 +99,27 @@
           $(currElement).html(v);
         } else {
           operatorHelper = function(op) {
-            if ($(currElement).hasClass('number') || $(currElement).hasClass('comment')) {
+            console.log('OP Helper');
+            console.log('LAST:');
+            console.log(getLastNonCommentElement());
+            if (!getLastNonCommentElement()) {
+              if (op === '-') {
+                currElement = newNumber();
+                return $(currElement).html('-');
+              } else {
+                return currElement = newOperator(op);
+              }
+            } else if ($(getLastNonCommentElement()).hasClass('number')) {
               return currElement = newOperator(op);
-            } else if ($(currElement).hasClass('operator')) {
-              return $(currElement).html(op);
+            } else if ($(getLastNonCommentElement()).hasClass('operator')) {
+              if (op === '-') {
+                currElement = newNumber();
+                return $(currElement).html('-');
+              } else {
+                return $(currElement).html(op);
+              }
             }
           };
-          console.log(e.which);
           switch (e.which) {
             case KEY_CODE['plus']:
               if (e.shiftKey) {
@@ -110,8 +142,6 @@
               }
               break;
             default:
-              console.log('Here we are again');
-              console.log(e);
               if (e.which !== 0 && e.charCode !== 0) {
                 if (!$(currElement).hasClass('comment')) {
                   currElement = newComment();
@@ -192,31 +222,35 @@
       return $(activeStatement).addClass('error');
     };
     getEquationTokens = function() {
-      var e, eqnString, lastToken, newTokens, t, tokens, _i, _j, _len, _len1, _ref;
+      var e, eqnString, eqnTokens, lastToken, t, tokens, _i, _j, _len, _len1, _ref;
       eqnString = "";
       _ref = $(activeStatement).children();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         e = _ref[_i];
-        if ($(e).hasClass('element')) {
+        if ($(e).hasClass('element') && !$(e).hasClass('comment')) {
           eqnString += $(e).html() + ' ';
         }
       }
       tokens = eqnString.tokens();
       lastToken = null;
-      newTokens = [];
+      eqnTokens = [];
       for (_j = 0, _len1 = tokens.length; _j < _len1; _j++) {
         t = tokens[_j];
         if ((lastToken != null) && lastToken.type === 'operator' && t.type === 'number' && lastToken.value === '-') {
-          newTokens.pop();
-          t.value = '-' + t.value;
+          if ((eqnTokens.length > 1 && eqnTokens[eqnTokens.length - 2].type === 'operator') || eqnTokens.length === 1) {
+            eqnTokens.pop();
+            t.value = '-' + t.value;
+          }
         }
-        newTokens.push(t);
-        lastToken = t;
+        if (t.type !== 'name') {
+          eqnTokens.push(t);
+          lastToken = t;
+        }
       }
       console.log('TOKENS:');
       console.log(eqnString);
-      console.log(newTokens);
-      return newTokens;
+      console.log(eqnTokens);
+      return eqnTokens;
     };
     evaluateSolution = function(tokens) {
       var eqnString, t, _i, _len;
@@ -242,10 +276,22 @@
         for (_i = 0, _len = tokens.length; _i < _len; _i++) {
           t = tokens[_i];
           if (t.type !== 'name') {
-            if ((lastNonComment != null) && lastNonComment.type === 'operator' && t.type === 'operator') {
-              console.log("statements can't have two operators without a number between them");
-              statementProblem(lastNonComment, lastToken, t, 'A Number is Missing');
-              err = true;
+            if (!lastNonComment) {
+              if (t.type === 'operator') {
+                console.log("statements can't start with an operator");
+                statementProblem(t, 'A Number is Missing');
+                err = true;
+              }
+            } else {
+              if (lastNonComment.type === 'operator' && t.type === 'operator') {
+                console.log("statements can't have two operators without a number between them");
+                statementProblem(lastNonComment, lastToken, t, 'A Number is Missing');
+                err = true;
+              } else if (lastNonComment.type === 'number' && t.type === 'number') {
+                console.log("statements can't have two numbers without an operator between them");
+                statementProblem(lastNonComment, lastToken, t, 'An Operator is Missing');
+                err = true;
+              }
             }
             lastNonComment = t;
           }

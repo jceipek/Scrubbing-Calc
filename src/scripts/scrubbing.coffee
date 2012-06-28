@@ -45,6 +45,21 @@ $ () ->
   # circle.attr('stroke','#f00')
   # circle.attr('fill', 'none')
 
+  getLastNonCommentElement = () ->
+    # Includes currElement
+    if $(currElement).hasClass('number') or $(currElement).hasClass('operator') or currElement == null
+      console.log('A')
+      return currElement
+    lastNonComment = null
+    while !lastNonComment? or $(lastNonComment).hasClass('comment')
+      lastNonComment = currElement.previousSibling
+    if $(lastNonComment).hasClass('number') or $(lastNonComment).hasClass('operator')
+      console.log('B')
+      return lastNonComment
+    else
+      console.log('C')
+      return null
+
   deleteCurrElementAndBacktrack = () ->
     elementToDelete = currElement 
     currElement = currElement.previousSibling
@@ -88,12 +103,25 @@ $ () ->
       else 
 
         operatorHelper = (op) ->
-          if $(currElement).hasClass('number') or $(currElement).hasClass('comment') 
+          console.log('OP Helper')
+          console.log('LAST:')
+          console.log(getLastNonCommentElement())
+          if !getLastNonCommentElement()
+            if op == '-' # allow us to have negative numbers
+              currElement = newNumber()
+              $(currElement).html('-')
+            else
+              currElement = newOperator(op)
+          else if $(getLastNonCommentElement()).hasClass('number')
+
             currElement = newOperator(op)
-          else if $(currElement).hasClass('operator')
-            $(currElement).html(op)
-        
-        console.log(e.which)
+          else if $(getLastNonCommentElement()).hasClass('operator')
+            if op == '-' # allow us to have negative numbers
+              currElement = newNumber()
+              $(currElement).html('-')
+            else
+              $(currElement).html(op)
+      
         switch e.which
           # The operators          
           when KEY_CODE['plus']
@@ -109,8 +137,6 @@ $ () ->
             if e.shiftKey
               operatorHelper('*')
           else
-            console.log('Here we are again')
-            console.log(e)
             if e.which != 0 and e.charCode != 0
               if !$(currElement).hasClass('comment')
                 currElement = newComment()
@@ -186,21 +212,24 @@ $ () ->
   getEquationTokens = () ->
     eqnString = ""
     for e in $(activeStatement).children()
-      if $(e).hasClass('element')
+      if $(e).hasClass('element') and !$(e).hasClass('comment')
         eqnString += $(e).html() + ' '
     tokens = eqnString.tokens()
     lastToken = null
-    newTokens = []
+    eqnTokens = []
     for t in tokens
       if lastToken? and lastToken.type == 'operator' and t.type == 'number' and lastToken.value == '-'
-        newTokens.pop()
-        t.value = '-' + t.value
-      newTokens.push(t)
-      lastToken = t
+        if (eqnTokens.length > 1 and eqnTokens[eqnTokens.length - 2].type == 'operator') or
+           eqnTokens.length == 1 
+            eqnTokens.pop()
+            t.value = '-' + t.value
+      if t.type != 'name'
+        eqnTokens.push(t)
+        lastToken = t
     console.log('TOKENS:')
     console.log(eqnString)
-    console.log(newTokens)
-    return newTokens
+    console.log(eqnTokens)
+    return eqnTokens
 
   evaluateSolution = (tokens) ->
     eqnString = ""
@@ -220,12 +249,26 @@ $ () ->
       lastToken = null      
       for t in tokens
         if t.type != 'name' # Equivalent to comment for now
-          if lastNonComment? and lastNonComment.type == 'operator' and t.type == 'operator'
-            # Invalid eqn
-            # statements can't have two operators without a number between them
-            console.log("statements can't have two operators without a number between them")
-            statementProblem(lastNonComment, lastToken, t, 'A Number is Missing')
-            err = true            
+          if !lastNonComment 
+            if t.type == 'operator'
+              # Invalid eqn
+              # statements can't start with an operator
+              console.log("statements can't start with an operator")
+              statementProblem(t, 'A Number is Missing')
+              err = true 
+          else 
+            if lastNonComment.type == 'operator' and t.type == 'operator'
+              # Invalid eqn
+              # statements can't have two operators without a number between them
+              console.log("statements can't have two operators without a number between them")
+              statementProblem(lastNonComment, lastToken, t, 'A Number is Missing')
+              err = true            
+            else if lastNonComment.type == 'number' and t.type == 'number'
+              # Invalid eqn
+              # statements can't have two numbers without an operator between them
+              console.log("statements can't have two numbers without an operator between them")
+              statementProblem(lastNonComment, lastToken, t, 'An Operator is Missing')
+              err = true
           lastNonComment = t
         lastToken = t
       console.log('IMPORTANT:')
