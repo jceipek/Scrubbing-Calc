@@ -1,7 +1,11 @@
+.computation {
+  margin-top: 3em;
+}
 .number {
-  margin-top: 5em;
-  margin-right: -0.5em;
-  margin-left: 1em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-right: 0.25em;
+  margin-left: 0.25em;
   width: auto;
   display: inline-block;
   font-size: 2.5em;
@@ -9,18 +13,20 @@
   background-color: #a8e2f8;
 }
 .operator {
-  margin-top: 5em;
-  margin-right: -0.5em;
-  margin-left: 1em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-right: 0.25em;
+  margin-left: 0.25em;
   width: auto;
   display: inline-block;
   font-size: 2.5em;
   line-height: 1em;
 }
 .comment {
-  margin-top: 5em;
-  margin-right: -0.5em;
-  margin-left: 1em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-right: 0.25em;
+  margin-left: 0.25em;
   width: auto;
   display: inline-block;
   font-size: 2.5em;
@@ -28,13 +34,32 @@
   color: #c4c4c4;
 }
 .comparator {
-  margin-top: 5em;
-  margin-right: -0.5em;
-  margin-left: 1em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-right: 0.25em;
+  margin-left: 0.25em;
   width: auto;
   display: inline-block;
   font-size: 2.5em;
   line-height: 1em;
   color: #c4c4c4;
   display: inline-block;
+}
+#statement {
+  display: inline-block;
+  margin-left: 1em;
+}
+#result {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-right: 0.25em;
+  margin-left: 0.25em;
+  width: auto;
+  display: inline-block;
+  font-size: 2.5em;
+  line-height: 1em;
+  background-color: #7ffd89;
+}
+.error {
+  background-color: #ffa3a3;
 }

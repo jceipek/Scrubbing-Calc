@@ -2,7 +2,7 @@
 (function() {
 
   $(function() {
-    var KEY_CODE, activeStatement, clickPos, currElement, deleteCurrElementAndBacktrack, newComment, newNumber, newOperator, selectedElement;
+    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currElement, deleteCurrElementAndBacktrack, evaluateSolution, getEquationTokens, newComment, newNumber, newOperator, selectedElement, statementProblem, updateComp;
     KEY_CODE = {
       'min_num': 48,
       'max_num': 57,
@@ -53,15 +53,19 @@
             if ($(currElement).hasClass('comment')) {
               v = $(currElement).html();
               if (v.length > 1) {
-                return $(currElement).html(v.substring(0, v.length - 1));
+                $(currElement).html(v.substring(0, v.length - 1));
               } else {
-                return deleteCurrElementAndBacktrack();
+                deleteCurrElementAndBacktrack();
               }
             } else if ($(currElement).hasClass('number')) {
-              return deleteCurrElementAndBacktrack();
+              deleteCurrElementAndBacktrack();
             } else if ($(currElement).hasClass('operator')) {
-              return deleteCurrElementAndBacktrack();
+              deleteCurrElementAndBacktrack();
             }
+            return updateComp();
+          case KEY_CODE['delete']:
+            deleteCurrElementAndBacktrack();
+            return updateComp();
         }
       }
     });
@@ -74,7 +78,7 @@
           }
           console.log('Plain Number');
           v = $(currElement).html() + (e.which - KEY_CODE['min_num']);
-          return $(currElement).html(v);
+          $(currElement).html(v);
         } else {
           operatorHelper = function(op) {
             if ($(currElement).hasClass('number') || $(currElement).hasClass('comment')) {
@@ -87,22 +91,22 @@
           switch (e.which) {
             case KEY_CODE['plus']:
               if (e.shiftKey) {
-                return operatorHelper('+');
+                operatorHelper('+');
               }
               break;
             case KEY_CODE['minus']:
               if (!e.shiftKey) {
-                return operatorHelper('-');
+                operatorHelper('-');
               }
               break;
             case KEY_CODE['divide']:
               if (!e.shiftKey) {
-                return operatorHelper('/');
+                operatorHelper('/');
               }
               break;
             case KEY_CODE['multiply']:
               if (e.shiftKey) {
-                return operatorHelper('*');
+                operatorHelper('*');
               }
               break;
             default:
@@ -113,11 +117,12 @@
                   currElement = newComment();
                 }
                 v = $(currElement).html() + String.fromCharCode(e.which);
-                return $(currElement).html(v);
+                $(currElement).html(v);
               }
           }
         }
       }
+      return updateComp();
     });
     $(window).mousemove(function(e) {
       var d, v;
@@ -125,6 +130,7 @@
         v = Number($(selectedElement).html());
         d = Math.round(e.screenX - clickPos.x);
         $(selectedElement).html(d + v);
+        updateComp();
         clickPos.x = e.screenX;
         return clickPos.y = e.screenY;
       }
@@ -135,6 +141,7 @@
     newNumber = function() {
       var e;
       e = document.createElement('span');
+      $(e).addClass('element');
       $(e).addClass('number');
       $(e).appendTo(activeStatement);
       $(e).mousedown(function(e) {
@@ -150,6 +157,7 @@
       var e;
       e = document.createElement('span');
       $(e).html(op);
+      $(e).addClass('element');
       $(e).addClass('operator');
       $(e).appendTo(activeStatement);
       $(e).mousedown(function(e) {
@@ -161,9 +169,10 @@
       });
       return e;
     };
-    return newComment = function() {
+    newComment = function() {
       var e;
       e = document.createElement('span');
+      $(e).addClass('element');
       $(e).addClass('comment');
       $(e).appendTo(activeStatement);
       $(e).mousedown(function(e) {
@@ -174,6 +183,87 @@
         return false;
       });
       return e;
+    };
+    clearStatementProblems = function() {
+      $(activeStatement).removeClass('error');
+      return $('#result').removeClass('error');
+    };
+    statementProblem = function() {
+      return $(activeStatement).addClass('error');
+    };
+    getEquationTokens = function() {
+      var e, eqnString, lastToken, newTokens, t, tokens, _i, _j, _len, _len1, _ref;
+      eqnString = "";
+      _ref = $(activeStatement).children();
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        e = _ref[_i];
+        if ($(e).hasClass('element')) {
+          eqnString += $(e).html() + ' ';
+        }
+      }
+      tokens = eqnString.tokens();
+      lastToken = null;
+      newTokens = [];
+      for (_j = 0, _len1 = tokens.length; _j < _len1; _j++) {
+        t = tokens[_j];
+        if ((lastToken != null) && lastToken.type === 'operator' && t.type === 'number' && lastToken.value === '-') {
+          newTokens.pop();
+          t.value = '-' + t.value;
+        }
+        newTokens.push(t);
+        lastToken = t;
+      }
+      console.log('TOKENS:');
+      console.log(eqnString);
+      console.log(newTokens);
+      return newTokens;
+    };
+    evaluateSolution = function(tokens) {
+      var eqnString, t, _i, _len;
+      eqnString = "";
+      for (_i = 0, _len = tokens.length; _i < _len; _i++) {
+        t = tokens[_i];
+        if (t.type !== 'name') {
+          eqnString += t.value + ' ';
+        }
+      }
+      console.log(eqnString);
+      console.log(eval(eqnString));
+      return eval(eqnString);
+    };
+    return updateComp = function() {
+      var err, lastNonComment, lastToken, t, tokens, _i, _len;
+      err = false;
+      clearStatementProblems();
+      tokens = getEquationTokens();
+      if (tokens.length > 0) {
+        lastNonComment = null;
+        lastToken = null;
+        for (_i = 0, _len = tokens.length; _i < _len; _i++) {
+          t = tokens[_i];
+          if (t.type !== 'name') {
+            if ((lastNonComment != null) && lastNonComment.type === 'operator' && t.type === 'operator') {
+              console.log("statements can't have two operators without a number between them");
+              statementProblem(lastNonComment, lastToken, t, 'A Number is Missing');
+              err = true;
+            }
+            lastNonComment = t;
+          }
+          lastToken = t;
+        }
+        console.log('IMPORTANT:');
+        console.log(lastNonComment);
+        if (lastNonComment.type === 'operator') {
+          console.log("statements can't end with operators");
+          statementProblem(lastNonComment, 'A Number is Missing');
+          err = true;
+        }
+      }
+      if (!err) {
+        return $('#result').html(evaluateSolution(tokens));
+      } else {
+        return $('#result').html('!').addClass('error');
+      }
     };
   });
 

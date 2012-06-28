@@ -1,11 +1,16 @@
 .base () {
-  margin-top: 5em;  
-  margin-right: -0.5em;
-  margin-left: 1em;
+  margin-top: 0.5em; 
+  margin-bottom: 0.5em; 
+  margin-right: 0.25em;
+  margin-left: 0.25em;
   width: auto;
   display: inline-block;
   font-size: 2.5em;
   line-height: 1em;
+}
+
+.computation {
+  margin-top: 3em;  
 }
 
 .number {
@@ -19,11 +24,25 @@
 
 .comment {
   .base;
-  color: rgb(196, 196, 196);  
+  color: rgb(196, 196, 196);
 }
 
 .comparator {
   .base;
   color: rgb(196, 196, 196);  
   display: inline-block;
+}
+
+#statement {
+  display: inline-block;
+  margin-left: 1em;
+}
+
+#result {
+  .base;
+  background-color: rgb(127, 253, 137);
+}
+
+.error {
+  background-color: rgb(255, 163, 163);
 }

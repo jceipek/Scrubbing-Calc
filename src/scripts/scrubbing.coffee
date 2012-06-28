@@ -70,6 +70,10 @@ $ () ->
             deleteCurrElementAndBacktrack()
           else if $(currElement).hasClass('operator')
             deleteCurrElementAndBacktrack()
+          updateComp()
+        when KEY_CODE['delete']
+          deleteCurrElementAndBacktrack()
+          updateComp()
 
   $(window).keypress (e) ->
     if !e.metaKey and !e.ctrlKey and !e.altKey
@@ -112,6 +116,8 @@ $ () ->
                 currElement = newComment()
               v = $(currElement).html() + String.fromCharCode(e.which)
               $(currElement).html(v)
+
+    updateComp()
   
   $(window).mousemove (e) ->
     #console.log('MOVING '+ e.button)
@@ -119,6 +125,7 @@ $ () ->
       v = ((Number) $(selectedElement).html())
       d = Math.round((e.screenX - clickPos.x)) 
       $(selectedElement).html(d + v)
+      updateComp()
       clickPos.x = e.screenX
       clickPos.y = e.screenY
 
@@ -127,6 +134,7 @@ $ () ->
 
   newNumber = () ->
     e = document.createElement('span')
+    $(e).addClass('element')
     $(e).addClass('number')
     $(e).appendTo(activeStatement)
     
@@ -141,6 +149,7 @@ $ () ->
   newOperator = (op) ->
     e = document.createElement('span')
     $(e).html(op)
+    $(e).addClass('element')
     $(e).addClass('operator')
     $(e).appendTo(activeStatement)
     
@@ -154,6 +163,7 @@ $ () ->
 
   newComment = () ->
     e = document.createElement('span')
+    $(e).addClass('element')
     $(e).addClass('comment')
     $(e).appendTo(activeStatement)
     
@@ -164,3 +174,72 @@ $ () ->
       clickPos.y = e.screenY
       false
     e
+
+  clearStatementProblems = () ->
+    $(activeStatement).removeClass('error')
+    $('#result').removeClass('error')
+
+  statementProblem = () ->
+    # TODO: Add more Params
+    $(activeStatement).addClass('error')
+
+  getEquationTokens = () ->
+    eqnString = ""
+    for e in $(activeStatement).children()
+      if $(e).hasClass('element')
+        eqnString += $(e).html() + ' '
+    tokens = eqnString.tokens()
+    lastToken = null
+    newTokens = []
+    for t in tokens
+      if lastToken? and lastToken.type == 'operator' and t.type == 'number' and lastToken.value == '-'
+        newTokens.pop()
+        t.value = '-' + t.value
+      newTokens.push(t)
+      lastToken = t
+    console.log('TOKENS:')
+    console.log(eqnString)
+    console.log(newTokens)
+    return newTokens
+
+  evaluateSolution = (tokens) ->
+    eqnString = ""
+    for t in tokens
+      eqnString += t.value + ' ' if t.type != 'name'
+    console.log(eqnString)
+    console.log(eval(eqnString))
+    return eval(eqnString)
+
+  updateComp = () ->
+    # TODO: When raising error, pass elements, not tokens to error function
+    err = false
+    clearStatementProblems()
+    tokens = getEquationTokens()
+    if tokens.length > 0
+      lastNonComment = null
+      lastToken = null      
+      for t in tokens
+        if t.type != 'name' # Equivalent to comment for now
+          if lastNonComment? and lastNonComment.type == 'operator' and t.type == 'operator'
+            # Invalid eqn
+            # statements can't have two operators without a number between them
+            console.log("statements can't have two operators without a number between them")
+            statementProblem(lastNonComment, lastToken, t, 'A Number is Missing')
+            err = true            
+          lastNonComment = t
+        lastToken = t
+      console.log('IMPORTANT:')
+      console.log(lastNonComment)
+      if lastNonComment.type == 'operator'
+        # Invalid eqn
+        # statements can't end with operators
+        console.log("statements can't end with operators")
+        statementProblem(lastNonComment, 'A Number is Missing')
+        err = true
+
+    if !err
+      $('#result').html(evaluateSolution(tokens))
+    else
+      $('#result').html('!').addClass('error')
+      
+
