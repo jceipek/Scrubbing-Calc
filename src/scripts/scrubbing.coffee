@@ -71,14 +71,12 @@ $ () ->
     if !e.shiftKey and !e.metaKey and !e.ctrlKey and !e.altKey 
       switch e.which
         when KEY_CODE['backspace']
-          if $(currElement).hasClass('comment')
+          if $(currElement).hasClass('comment') or $(currElement).hasClass('number')
             v = $(currElement).html()
             if v.length > 1
               $(currElement).html(v.substring(0,v.length-1))
             else
               deleteCurrElementAndBacktrack()
-          else if $(currElement).hasClass('number')
-            deleteCurrElementAndBacktrack()
           else if $(currElement).hasClass('operator')
             deleteCurrElementAndBacktrack()
           updateComp()
@@ -226,8 +224,9 @@ $ () ->
     eqnString = ""
     for t in tokens
       eqnString += t.value + ' ' if t.type != 'name'
-    return eval(eqnString)
-
+    e = eval(eqnString) 
+    return e if e?
+    return ''
   updateComp = () ->
     # TODO: When raising error, pass elements, not tokens to error function
     err = false
@@ -269,7 +268,6 @@ $ () ->
 
     if !err
       $('#result').html(evaluateSolution(tokens))
+      console.log('no error')
     else
       $('#result').html('!').addClass('error')
-      
-

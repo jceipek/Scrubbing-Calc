@@ -64,15 +64,13 @@
       if (!e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey) {
         switch (e.which) {
           case KEY_CODE['backspace']:
-            if ($(currElement).hasClass('comment')) {
+            if ($(currElement).hasClass('comment') || $(currElement).hasClass('number')) {
               v = $(currElement).html();
               if (v.length > 1) {
                 $(currElement).html(v.substring(0, v.length - 1));
               } else {
                 deleteCurrElementAndBacktrack();
               }
-            } else if ($(currElement).hasClass('number')) {
-              deleteCurrElementAndBacktrack();
             } else if ($(currElement).hasClass('operator')) {
               deleteCurrElementAndBacktrack();
             }
@@ -245,7 +243,7 @@
       return eqnTokens;
     };
     evaluateSolution = function(tokens) {
-      var eqnString, t, _i, _len;
+      var e, eqnString, t, _i, _len;
       eqnString = "";
       for (_i = 0, _len = tokens.length; _i < _len; _i++) {
         t = tokens[_i];
@@ -253,7 +251,11 @@
           eqnString += t.value + ' ';
         }
       }
-      return eval(eqnString);
+      e = eval(eqnString);
+      if (e != null) {
+        return e;
+      }
+      return '';
     };
     return updateComp = function() {
       var err, lastNonComment, lastToken, t, tokens, _i, _len;
@@ -294,7 +296,8 @@
         }
       }
       if (!err) {
-        return $('#result').html(evaluateSolution(tokens));
+        $('#result').html(evaluateSolution(tokens));
+        return console.log('no error');
       } else {
         return $('#result').html('!').addClass('error');
       }
