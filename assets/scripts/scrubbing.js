@@ -136,6 +136,9 @@
             default:
               if (e.which !== 0 && e.charCode !== 0) {
                 if (!$(currElement).hasClass('comment')) {
+                  if ($(currElement).hasClass('number') && $(currElement).html() === '-') {
+                    $(currElement).removeClass('number').addClass('operator');
+                  }
                   currElement = newComment();
                 }
                 v = $(currElement).html() + String.fromCharCode(e.which);

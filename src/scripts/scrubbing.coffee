@@ -131,6 +131,8 @@ $ () ->
           else
             if e.which != 0 and e.charCode != 0
               if !$(currElement).hasClass('comment')
+                if $(currElement).hasClass('number') and $(currElement).html() == '-'
+                  $(currElement).removeClass('number').addClass('operator')
                 currElement = newComment()
               v = $(currElement).html() + String.fromCharCode(e.which)
               $(currElement).html(v)
