@@ -38,7 +38,6 @@
     getLastNonCommentElement = function() {
       var lastNonComment;
       if ($(currElement).hasClass('number') || $(currElement).hasClass('operator') || currElement === null) {
-        console.log('A');
         return currElement;
       }
       lastNonComment = null;
@@ -46,10 +45,8 @@
         lastNonComment = currElement.previousSibling;
       }
       if ($(lastNonComment).hasClass('number') || $(lastNonComment).hasClass('operator')) {
-        console.log('B');
         return lastNonComment;
       } else {
-        console.log('C');
         return null;
       }
     };
@@ -57,7 +54,6 @@
       var elementToDelete;
       elementToDelete = currElement;
       currElement = currElement.previousSibling;
-      console.log(currElement);
       if (!$(currElement).hasClass('number') && !$(currElement).hasClass('operator') && !$(currElement).hasClass('comment')) {
         currElement = null;
       }
@@ -94,14 +90,10 @@
           if (!$(currElement).hasClass('number')) {
             currElement = newNumber();
           }
-          console.log('Plain Number');
           v = $(currElement).html() + (e.which - KEY_CODE['min_num']);
           $(currElement).html(v);
         } else {
           operatorHelper = function(op) {
-            console.log('OP Helper');
-            console.log('LAST:');
-            console.log(getLastNonCommentElement());
             if (!getLastNonCommentElement()) {
               if (op === '-') {
                 currElement = newNumber();
@@ -247,9 +239,6 @@
           lastToken = t;
         }
       }
-      console.log('TOKENS:');
-      console.log(eqnString);
-      console.log(eqnTokens);
       return eqnTokens;
     };
     evaluateSolution = function(tokens) {
@@ -261,8 +250,6 @@
           eqnString += t.value + ' ';
         }
       }
-      console.log(eqnString);
-      console.log(eval(eqnString));
       return eval(eqnString);
     };
     return updateComp = function() {
@@ -297,8 +284,6 @@
           }
           lastToken = t;
         }
-        console.log('IMPORTANT:');
-        console.log(lastNonComment);
         if (lastNonComment.type === 'operator') {
           console.log("statements can't end with operators");
           statementProblem(lastNonComment, 'A Number is Missing');

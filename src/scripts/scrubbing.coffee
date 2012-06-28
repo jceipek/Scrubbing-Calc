@@ -48,22 +48,18 @@ $ () ->
   getLastNonCommentElement = () ->
     # Includes currElement
     if $(currElement).hasClass('number') or $(currElement).hasClass('operator') or currElement == null
-      console.log('A')
       return currElement
     lastNonComment = null
     while !lastNonComment? or $(lastNonComment).hasClass('comment')
       lastNonComment = currElement.previousSibling
     if $(lastNonComment).hasClass('number') or $(lastNonComment).hasClass('operator')
-      console.log('B')
       return lastNonComment
     else
-      console.log('C')
       return null
 
   deleteCurrElementAndBacktrack = () ->
     elementToDelete = currElement 
     currElement = currElement.previousSibling
-    console.log(currElement)
     if !$(currElement).hasClass('number') and 
        !$(currElement).hasClass('operator') and 
        !$(currElement).hasClass('comment')
@@ -96,16 +92,12 @@ $ () ->
       if (KEY_CODE['min_num'] <= e.which <= KEY_CODE['max_num']) and !e.shiftKey
         if !$(currElement).hasClass('number')
           currElement = newNumber()
-        console.log('Plain Number')
         v = $(currElement).html() + (e.which - KEY_CODE['min_num'])
         $(currElement).html(v)
 
       else 
 
         operatorHelper = (op) ->
-          console.log('OP Helper')
-          console.log('LAST:')
-          console.log(getLastNonCommentElement())
           if !getLastNonCommentElement()
             if op == '-' # allow us to have negative numbers
               currElement = newNumber()
@@ -226,17 +218,12 @@ $ () ->
       if t.type != 'name'
         eqnTokens.push(t)
         lastToken = t
-    console.log('TOKENS:')
-    console.log(eqnString)
-    console.log(eqnTokens)
     return eqnTokens
 
   evaluateSolution = (tokens) ->
     eqnString = ""
     for t in tokens
       eqnString += t.value + ' ' if t.type != 'name'
-    console.log(eqnString)
-    console.log(eval(eqnString))
     return eval(eqnString)
 
   updateComp = () ->
@@ -271,8 +258,6 @@ $ () ->
               err = true
           lastNonComment = t
         lastToken = t
-      console.log('IMPORTANT:')
-      console.log(lastNonComment)
       if lastNonComment.type == 'operator'
         # Invalid eqn
         # statements can't end with operators
