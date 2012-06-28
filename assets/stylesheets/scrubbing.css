@@ -1,0 +1,29 @@
+.number {
+  margin-top: 5em;
+  margin-right: -0.5em;
+  margin-left: 1em;
+  width: auto;
+  background-color: #a8e2f8;
+  display: inline-block;
+  font-size: 2.5em;
+  line-height: 1em;
+}
+.operator {
+  margin-top: 5em;
+  margin-right: -0.5em;
+  margin-left: 1em;
+  width: auto;
+  display: inline-block;
+  font-size: 2.5em;
+  line-height: 1em;
+}
+.comment {
+  margin-top: 5em;
+  margin-right: -0.5em;
+  margin-left: 1em;
+  width: auto;
+  color: #c4c4c4;
+  display: inline-block;
+  font-size: 2.5em;
+  line-height: 1em;
+}
