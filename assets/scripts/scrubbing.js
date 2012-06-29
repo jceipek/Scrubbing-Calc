@@ -172,7 +172,11 @@
       e = document.createElement('span');
       $(e).addClass('element');
       $(e).addClass('number');
-      $(e).appendTo(activeStatement);
+      if (currElement != null) {
+        $(e).insertAfter(currElement);
+      } else {
+        $(e).appendTo(activeStatement);
+      }
       $(e).mousedown(function(e) {
         this.preventDefault;
         selectedElement = this;
@@ -188,7 +192,11 @@
       $(e).html(op);
       $(e).addClass('element');
       $(e).addClass('operator');
-      $(e).appendTo(activeStatement);
+      if (currElement != null) {
+        $(e).insertAfter(currElement);
+      } else {
+        $(e).appendTo(activeStatement);
+      }
       $(e).mousedown(function(e) {
         this.preventDefault;
         selectedElement = this;
@@ -235,7 +243,11 @@
       e = document.createElement('span');
       $(e).addClass('element');
       $(e).addClass('comment');
-      $(e).appendTo(activeStatement);
+      if (currElement != null) {
+        $(e).insertAfter(currElement);
+      } else {
+        $(e).appendTo(activeStatement);
+      }
       $(e).mousedown(function(e) {
         this.preventDefault;
         selectedElement = this;

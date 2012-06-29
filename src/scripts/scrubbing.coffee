@@ -156,7 +156,10 @@ $ () ->
     e = document.createElement('span')
     $(e).addClass('element')
     $(e).addClass('number')
-    $(e).appendTo(activeStatement)
+    if currElement?
+      $(e).insertAfter(currElement)
+    else
+      $(e).appendTo(activeStatement)
     
     $(e).mousedown (e) ->
       this.preventDefault
@@ -171,7 +174,10 @@ $ () ->
     $(e).html(op)
     $(e).addClass('element')
     $(e).addClass('operator')
-    $(e).appendTo(activeStatement)
+    if currElement?
+      $(e).insertAfter(currElement)
+    else
+      $(e).appendTo(activeStatement)
     
     $(e).mousedown (e) ->
       this.preventDefault
@@ -220,7 +226,10 @@ $ () ->
     e = document.createElement('span')
     $(e).addClass('element')
     $(e).addClass('comment')
-    $(e).appendTo(activeStatement)
+    if currElement?
+      $(e).insertAfter(currElement)
+    else
+      $(e).appendTo(activeStatement)
     
     $(e).mousedown (e) ->
       this.preventDefault
