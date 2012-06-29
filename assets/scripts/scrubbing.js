@@ -2,7 +2,7 @@
 (function() {
 
   $(function() {
-    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currElement, deleteCurrElementAndBacktrack, evaluateSolution, getEquationTokens, getLastNonCommentElement, newComment, newComparator, newNumber, newOperator, selectedElement, statementProblem, updateComp;
+    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currElement, deleteCurrElementAndBacktrack, evaluateSolution, getEquationTokens, getLastNonCommentElement, newComment, newComparator, newNumber, newOperator, newStatement, selectedElement, statementProblem, updateComp;
     KEY_CODE = {
       'min_num': 48,
       'max_num': 57,
@@ -34,7 +34,7 @@
       y: null
     };
     selectedElement = null;
-    activeStatement = $('.statement');
+    activeStatement = $('.statement')[0];
     currElement = null;
     getLastNonCommentElement = function() {
       var lastNonComment;
@@ -138,7 +138,7 @@
               }
               break;
             case KEY_CODE['equals']:
-              operatorHelper('=');
+              newComparator('=');
               break;
             default:
               if (e.which !== 0 && e.charCode !== 0) {
@@ -204,7 +204,7 @@
       $(e).html(cmp);
       $(e).addClass('element');
       $(e).addClass('comparator');
-      $(e).appendTo(activeStatement);
+      $(e).insertAfter(activeStatement.parentNode);
       $(e).mousedown(function(e) {
         this.preventDefault;
         selectedElement = this;
@@ -212,7 +212,23 @@
         clickPos.y = e.screenY;
         return false;
       });
-      return e;
+      e;
+
+      activeStatement = newStatement();
+      return currElement = null;
+    };
+    newStatement = function() {
+      var container, evl, statement;
+      container = document.createElement('span');
+      $(container).addClass('statement-container');
+      statement = document.createElement('div');
+      $(statement).addClass('statement');
+      evl = document.createElement('div');
+      $(evl).addClass('eval');
+      $(statement).appendTo(container);
+      $(evl).appendTo(container);
+      $(container).appendTo(activeStatement.parentNode.parentNode);
+      return statement;
     };
     newComment = function() {
       var e;

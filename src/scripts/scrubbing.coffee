@@ -31,7 +31,7 @@ $ () ->
     y: null
 
   selectedElement = null
-  activeStatement = $('.statement')
+  activeStatement = $('.statement')[0]
   currElement = null
 
   # Taken from the Raphael clock example
@@ -129,7 +129,7 @@ $ () ->
             if e.shiftKey
               operatorHelper('*')
           when KEY_CODE['equals']
-            operatorHelper('=')
+            newComparator('=') 
           else
             if e.which != 0 and e.charCode != 0
               if !$(currElement).hasClass('comment')
@@ -186,7 +186,7 @@ $ () ->
     $(e).html(cmp)
     $(e).addClass('element')
     $(e).addClass('comparator')
-    $(e).appendTo(activeStatement)
+    $(e).insertAfter(activeStatement.parentNode)
     
     $(e).mousedown (e) ->
       this.preventDefault
@@ -195,6 +195,26 @@ $ () ->
       clickPos.y = e.screenY
       false
     e
+
+    activeStatement = newStatement()
+    currElement = null
+
+  newStatement = () ->
+    container = document.createElement('span')
+    $(container).addClass('statement-container')
+    
+    statement = document.createElement('div')
+    $(statement).addClass('statement')
+
+    evl = document.createElement('div')
+    $(evl).addClass('eval')
+
+    $(statement).appendTo(container)
+    $(evl).appendTo(container)
+
+    $(container).appendTo(activeStatement.parentNode.parentNode)
+
+    return statement
 
   newComment = () ->
     e = document.createElement('span')
