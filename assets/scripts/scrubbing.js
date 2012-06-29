@@ -21,6 +21,7 @@
       'minus': 45,
       'plus': 43,
       'divide': 47,
+      'equals': 61,
       'multiply': 42,
       'paren_open': 57,
       'paren_close': 48,
@@ -104,7 +105,9 @@
             } else if ($(getLastNonCommentElement()).hasClass('operator')) {
               if (op === '-') {
                 currElement = newNumber();
-                return $(currElement).html('-');
+                return $(currElement).html(op);
+              } else if ($(currElement).hasClass('comment')) {
+                return currElement = newOperator(op);
               } else {
                 return $(currElement).html(op);
               }
@@ -133,6 +136,9 @@
               if (e.shiftKey) {
                 operatorHelper('*');
               }
+              break;
+            case KEY_CODE['equals']:
+              operatorHelper('=');
               break;
             default:
               if (e.which !== 0 && e.charCode !== 0) {

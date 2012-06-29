@@ -18,6 +18,7 @@ $ () ->
     'minus': 45 
     'plus': 43 # Needs Shift
     'divide': 47
+    'equals': 61
     'multiply': 42 # Needs Shift
     'paren_open' : 57 # Needs Shift
     'paren_close' : 48 # Needs Shift
@@ -92,9 +93,7 @@ $ () ->
           currElement = newNumber()
         v = $(currElement).html() + (e.which - KEY_CODE['min_num'])
         $(currElement).html(v)
-
       else 
-
         operatorHelper = (op) ->
           if !getLastNonCommentElement()
             if op == '-' # allow us to have negative numbers
@@ -103,12 +102,13 @@ $ () ->
             else
               currElement = newOperator(op)
           else if $(getLastNonCommentElement()).hasClass('number')
-
             currElement = newOperator(op)
           else if $(getLastNonCommentElement()).hasClass('operator')
             if op == '-' # allow us to have negative numbers
               currElement = newNumber()
-              $(currElement).html('-')
+              $(currElement).html(op)
+            else if $(currElement).hasClass('comment') 
+              currElement = newOperator(op)
             else
               $(currElement).html(op)
       
@@ -116,7 +116,6 @@ $ () ->
           $(currElement).removeClass('number').addClass('operator')
         switch e.which
           # The operators          
-
           when KEY_CODE['plus']
             if e.shiftKey
               operatorHelper ('+')
@@ -129,14 +128,14 @@ $ () ->
           when KEY_CODE['multiply']
             if e.shiftKey
               operatorHelper('*')
+          when KEY_CODE['equals']
+            operatorHelper('=')
           else
             if e.which != 0 and e.charCode != 0
               if !$(currElement).hasClass('comment')
                 currElement = newComment()
               v = $(currElement).html() + String.fromCharCode(e.which)
               $(currElement).html(v)
-
-
 
     updateComp()
   
