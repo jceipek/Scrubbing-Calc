@@ -2,7 +2,7 @@
 (function() {
 
   $(function() {
-    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currElement, deleteCurrElementAndBacktrack, evaluateSolution, getEquationTokensForStatement, getLastNonCommentElement, newComment, newComparator, newNumber, newOperator, newStatement, selectedElement, statementProblem, updateComp, updateEvaluationForStatement;
+    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currComputation, currElement, deleteCurrElementAndBacktrack, evaluateSolution, getEquationTokensForStatement, getLastNonCommentElement, newComment, newComparator, newNumber, newOperator, newStatement, selectedElement, statementProblem, updateComp, updateEvaluationForStatement;
     KEY_CODE = {
       'min_num': 48,
       'max_num': 57,
@@ -36,6 +36,7 @@
     selectedElement = null;
     activeStatement = $('.statement')[0];
     currElement = null;
+    currComputation = $('.computation')[0];
     getLastNonCommentElement = function() {
       var lastNonComment;
       if ($(currElement).hasClass('number') || $(currElement).hasClass('operator') || currElement === null) {
@@ -235,7 +236,7 @@
       $(evl).addClass('eval');
       $(statement).appendTo(container);
       $(evl).appendTo(container);
-      $(container).appendTo(activeStatement.parentNode.parentNode);
+      $(container).appendTo(currComputation);
       return statement;
     };
     newComment = function() {
@@ -355,7 +356,22 @@
       return res;
     };
     return updateComp = function() {
-      return updateEvaluationForStatement(activeStatement);
+      var newVal, statement, val, _i, _len, _ref, _results;
+      val = null;
+      _ref = $(currComputation).children('.statement-container').children('.statement');
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        statement = _ref[_i];
+        newVal = updateEvaluationForStatement(statement);
+        if ((val != null) && newVal !== val) {
+          console.log('Equation Inconsistency!');
+          $(statement).parent().prev().addClass('error');
+        } else {
+          $(statement).parent().prev().removeClass('error');
+        }
+        _results.push(val = newVal);
+      }
+      return _results;
     };
   });
 

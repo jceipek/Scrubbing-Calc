@@ -33,6 +33,7 @@ $ () ->
   selectedElement = null
   activeStatement = $('.statement')[0]
   currElement = null
+  currComputation = $('.computation')[0]
 
   # Taken from the Raphael clock example
   # paper = Raphael(10, 50, 1000, 1000)
@@ -218,7 +219,7 @@ $ () ->
     $(statement).appendTo(container)
     $(evl).appendTo(container)
 
-    $(container).appendTo(activeStatement.parentNode.parentNode)
+    $(container).appendTo(currComputation)
 
     return statement
 
@@ -274,7 +275,7 @@ $ () ->
     return ''
 
   updateEvaluationForStatement = (statement) ->
-    # TODO: When raising error, pass elements, not tokens to error function
+    # TODO: When raising error, pass elements, not tokens to error function (so we can show what went wrong)
     err = false
     clearStatementProblems(statement)
     tokens = getEquationTokensForStatement(statement)
@@ -322,5 +323,12 @@ $ () ->
     return res    
 
   updateComp = () ->
-    updateEvaluationForStatement(activeStatement)
+    val = null
+    for statement in $(currComputation).children('.statement-container').children('.statement')
+      newVal = updateEvaluationForStatement(statement)
+      if val? and newVal != val
+        console.log('Equation Inconsistency!')
+        $(statement).parent().prev().addClass('error')
+      else $(statement).parent().prev().removeClass('error')
+      val = newVal
 
