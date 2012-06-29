@@ -73,7 +73,7 @@ $ () ->
         activeStatement = $(cmp.previousElementSibling).children('.statement')[0]
         $(cmp).remove()
         $(statementToDelete.parentNode).remove()
-        currElement = $(activeStatement).children('.element').last()
+        currElement = $(activeStatement).children('.element').last()[0]
 
   $(window).keydown (e) ->
     # Handle special control keys.
@@ -281,9 +281,10 @@ $ () ->
     return e if e?
     return ''
 
-  updateEvaluationForStatement = (statement) ->
+  updateEvaluationForStatement = (statement, goal) ->
     # TODO: When raising error, pass elements, not tokens to error function (so we can show what went wrong)
-    err = false
+    completionNum = null
+    err = 0
     clearStatementProblems(statement)
     tokens = getEquationTokensForStatement(statement)
     if tokens.length > 0
@@ -297,20 +298,20 @@ $ () ->
               # statements can't start with an operator
               console.log("statements can't start with an operator")
               statementProblem(statement, t, 'A Number is Missing')
-              err = true 
+              err += 1
           else 
             if lastNonComment.type == 'operator' and t.type == 'operator'
               # Invalid eqn
               # statements can't have two operators without a number between them
               console.log("statements can't have two operators without a number between them")
               statementProblem(statement, lastNonComment, lastToken, t, 'A Number is Missing')
-              err = true            
+              err += 1
             else if lastNonComment.type == 'number' and t.type == 'number'
               # Invalid eqn
               # statements can't have two numbers without an operator between them
               console.log("statements can't have two numbers without an operator between them")
               statementProblem(statement, lastNonComment, lastToken, t, 'An Operator is Missing')
-              err = true
+              err += 1
           lastNonComment = t
         lastToken = t
       if lastNonComment.type == 'operator'
@@ -318,16 +319,22 @@ $ () ->
         # statements can't end with operators
         console.log("statements can't end with operators")
         statementProblem(statement, lastNonComment, 'A Number is Missing')
-        err = true
+        err += 1
+        #if err == 1
+        #switch lastNonComment.value    
+        #completionNum = 
 
     res = null
-    if !err
+    if err == 0
       res = evaluateSolution(tokens)
       $(statement).siblings('.eval').html(res)
       console.log('no error')
     else
       $(statement).siblings('.eval').html('!')
-    return res    
+    if res?
+      return [res, goal-res]
+    else
+      return [res, null]
 
   fakeComplete = (statement, val) ->
     addOp = true
@@ -357,7 +364,7 @@ $ () ->
     propagationVal = null
     $('.fake-element').remove()    
     for statement in $(currComputation).children('.statement-container').children('.statement')
-      newVal = updateEvaluationForStatement(statement)
+      [newVal, diff] = updateEvaluationForStatement(statement, propagationVal)
       if oldVal?
         cmp = $(statement).parent().prev()
         switch cmp.html()
@@ -366,7 +373,6 @@ $ () ->
               console.log('Equation Inconsistency!')
               cmp.addClass('error')
               if newVal?
-                diff = propagationVal - newVal
                 fakeComplete(statement, diff)
                 console.log('Diff: '+(diff))
             else

@@ -67,7 +67,7 @@
           activeStatement = $(cmp.previousElementSibling).children('.statement')[0];
           $(cmp).remove();
           $(statementToDelete.parentNode).remove();
-          return currElement = $(activeStatement).children('.element').last();
+          return currElement = $(activeStatement).children('.element').last()[0];
         }
       }
     };
@@ -317,9 +317,10 @@
       }
       return '';
     };
-    updateEvaluationForStatement = function(statement) {
-      var err, lastNonComment, lastToken, res, t, tokens, _i, _len;
-      err = false;
+    updateEvaluationForStatement = function(statement, goal) {
+      var completionNum, err, lastNonComment, lastToken, res, t, tokens, _i, _len;
+      completionNum = null;
+      err = 0;
       clearStatementProblems(statement);
       tokens = getEquationTokensForStatement(statement);
       if (tokens.length > 0) {
@@ -332,17 +333,17 @@
               if (t.type === 'operator') {
                 console.log("statements can't start with an operator");
                 statementProblem(statement, t, 'A Number is Missing');
-                err = true;
+                err += 1;
               }
             } else {
               if (lastNonComment.type === 'operator' && t.type === 'operator') {
                 console.log("statements can't have two operators without a number between them");
                 statementProblem(statement, lastNonComment, lastToken, t, 'A Number is Missing');
-                err = true;
+                err += 1;
               } else if (lastNonComment.type === 'number' && t.type === 'number') {
                 console.log("statements can't have two numbers without an operator between them");
                 statementProblem(statement, lastNonComment, lastToken, t, 'An Operator is Missing');
-                err = true;
+                err += 1;
               }
             }
             lastNonComment = t;
@@ -352,18 +353,22 @@
         if (lastNonComment.type === 'operator') {
           console.log("statements can't end with operators");
           statementProblem(statement, lastNonComment, 'A Number is Missing');
-          err = true;
+          err += 1;
         }
       }
       res = null;
-      if (!err) {
+      if (err === 0) {
         res = evaluateSolution(tokens);
         $(statement).siblings('.eval').html(res);
         console.log('no error');
       } else {
         $(statement).siblings('.eval').html('!');
       }
-      return res;
+      if (res != null) {
+        return [res, goal - res];
+      } else {
+        return [res, null];
+      }
     };
     fakeComplete = function(statement, val) {
       var addOp, e;
@@ -393,7 +398,7 @@
       return $(e).appendTo(statement);
     };
     return updateComp = function() {
-      var cmp, diff, newVal, oldVal, propagationVal, statement, _i, _len, _ref, _results;
+      var cmp, diff, newVal, oldVal, propagationVal, statement, _i, _len, _ref, _ref1, _results;
       oldVal = null;
       propagationVal = null;
       $('.fake-element').remove();
@@ -401,7 +406,7 @@
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         statement = _ref[_i];
-        newVal = updateEvaluationForStatement(statement);
+        _ref1 = updateEvaluationForStatement(statement, propagationVal), newVal = _ref1[0], diff = _ref1[1];
         if (oldVal != null) {
           cmp = $(statement).parent().prev();
           switch (cmp.html()) {
@@ -410,7 +415,6 @@
                 console.log('Equation Inconsistency!');
                 cmp.addClass('error');
                 if (newVal != null) {
-                  diff = propagationVal - newVal;
                   fakeComplete(statement, diff);
                   console.log('Diff: ' + diff);
                 }
