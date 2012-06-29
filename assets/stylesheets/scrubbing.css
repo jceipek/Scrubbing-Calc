@@ -2,8 +2,8 @@
   margin-top: 3em;
 }
 .number {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
   margin-right: 0.25em;
   margin-left: 0.25em;
   width: auto;
@@ -13,8 +13,18 @@
   background-color: #a8e2f8;
 }
 .operator {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
+  margin-right: 0.25em;
+  margin-left: 0.25em;
+  width: auto;
+  display: inline-block;
+  font-size: 2.5em;
+  line-height: 1em;
+}
+.comparator {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
   margin-right: 0.25em;
   margin-left: 0.25em;
   width: auto;
@@ -23,8 +33,8 @@
   line-height: 1em;
 }
 .comment {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
   margin-right: 0.25em;
   margin-left: 0.25em;
   width: auto;
@@ -33,9 +43,9 @@
   line-height: 1em;
   color: #c4c4c4;
 }
-.comparator {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+.eval {
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
   margin-right: 0.25em;
   margin-left: 0.25em;
   width: auto;
@@ -43,15 +53,25 @@
   font-size: 2.5em;
   line-height: 1em;
   color: #c4c4c4;
-  display: inline-block;
+  font-size: 1.5em;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  margin-top: 0em;
 }
-#statement {
+/*.comparator {
+  .base;
+  color: rgb(196, 196, 196);  
+  display: inline-block;
+}*/
+.statement-container {
   display: inline-block;
   margin-left: 1em;
 }
 #result {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+  margin-top: 0.2em;
+  margin-bottom: 0.2em;
   margin-right: 0.25em;
   margin-left: 0.25em;
   width: auto;

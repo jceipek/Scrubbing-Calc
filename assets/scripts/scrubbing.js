@@ -2,7 +2,7 @@
 (function() {
 
   $(function() {
-    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currElement, deleteCurrElementAndBacktrack, evaluateSolution, getEquationTokens, getLastNonCommentElement, newComment, newNumber, newOperator, selectedElement, statementProblem, updateComp;
+    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currElement, deleteCurrElementAndBacktrack, evaluateSolution, getEquationTokens, getLastNonCommentElement, newComment, newComparator, newNumber, newOperator, selectedElement, statementProblem, updateComp;
     KEY_CODE = {
       'min_num': 48,
       'max_num': 57,
@@ -33,7 +33,7 @@
       y: null
     };
     selectedElement = null;
-    activeStatement = $('#statement');
+    activeStatement = $('.statement');
     currElement = null;
     getLastNonCommentElement = function() {
       var lastNonComment;
@@ -110,6 +110,9 @@
               }
             }
           };
+          if ($(currElement).hasClass('number') && $(currElement).html() === '-') {
+            $(currElement).removeClass('number').addClass('operator');
+          }
           switch (e.which) {
             case KEY_CODE['plus']:
               if (e.shiftKey) {
@@ -134,9 +137,6 @@
             default:
               if (e.which !== 0 && e.charCode !== 0) {
                 if (!$(currElement).hasClass('comment')) {
-                  if ($(currElement).hasClass('number') && $(currElement).html() === '-') {
-                    $(currElement).removeClass('number').addClass('operator');
-                  }
                   currElement = newComment();
                 }
                 v = $(currElement).html() + String.fromCharCode(e.which);
@@ -192,6 +192,22 @@
       });
       return e;
     };
+    newComparator = function(cmp) {
+      var e;
+      e = document.createElement('span');
+      $(e).html(cmp);
+      $(e).addClass('element');
+      $(e).addClass('comparator');
+      $(e).appendTo(activeStatement);
+      $(e).mousedown(function(e) {
+        this.preventDefault;
+        selectedElement = this;
+        clickPos.x = e.screenX;
+        clickPos.y = e.screenY;
+        return false;
+      });
+      return e;
+    };
     newComment = function() {
       var e;
       e = document.createElement('span');
@@ -208,8 +224,7 @@
       return e;
     };
     clearStatementProblems = function() {
-      $(activeStatement).removeClass('error');
-      return $('#result').removeClass('error');
+      return $(activeStatement).removeClass('error');
     };
     statementProblem = function() {
       return $(activeStatement).addClass('error');
@@ -296,10 +311,10 @@
         }
       }
       if (!err) {
-        $('#result').html(evaluateSolution(tokens));
+        $('.eval').html(evaluateSolution(tokens));
         return console.log('no error');
       } else {
-        return $('#result').html('!').addClass('error');
+        return $('.eval').html('!');
       }
     };
   });

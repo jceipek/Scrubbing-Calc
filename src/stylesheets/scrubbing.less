@@ -1,6 +1,6 @@
 .base () {
-  margin-top: 0.5em; 
-  margin-bottom: 0.5em; 
+  margin-top: 0.2em; 
+  margin-bottom: 0.2em; 
   margin-right: 0.25em;
   margin-left: 0.25em;
   width: auto;
@@ -22,18 +22,33 @@
   .base;
 }
 
+.comparator {
+  .base;  
+}
+
 .comment {
   .base;
   color: rgb(196, 196, 196);
 }
 
-.comparator {
+.eval {
+  .base;
+  color: rgb(196, 196, 196);
+  font-size: 1.5em;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  margin-top: 0em;
+}
+
+/*.comparator {
   .base;
   color: rgb(196, 196, 196);  
   display: inline-block;
-}
+}*/
 
-#statement {
+.statement-container {
   display: inline-block;
   margin-left: 1em;
 }

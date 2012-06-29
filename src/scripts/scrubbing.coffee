@@ -30,7 +30,7 @@ $ () ->
     y: null
 
   selectedElement = null
-  activeStatement = $('#statement')
+  activeStatement = $('.statement')
   currElement = null
 
   # Taken from the Raphael clock example
@@ -112,8 +112,11 @@ $ () ->
             else
               $(currElement).html(op)
       
+        if $(currElement).hasClass('number') and $(currElement).html() == '-'
+          $(currElement).removeClass('number').addClass('operator')
         switch e.which
           # The operators          
+
           when KEY_CODE['plus']
             if e.shiftKey
               operatorHelper ('+')
@@ -129,11 +132,11 @@ $ () ->
           else
             if e.which != 0 and e.charCode != 0
               if !$(currElement).hasClass('comment')
-                if $(currElement).hasClass('number') and $(currElement).html() == '-'
-                  $(currElement).removeClass('number').addClass('operator')
                 currElement = newComment()
               v = $(currElement).html() + String.fromCharCode(e.which)
               $(currElement).html(v)
+
+
 
     updateComp()
   
@@ -179,6 +182,21 @@ $ () ->
       false
     e
 
+  newComparator = (cmp) ->
+    e = document.createElement('span')
+    $(e).html(cmp)
+    $(e).addClass('element')
+    $(e).addClass('comparator')
+    $(e).appendTo(activeStatement)
+    
+    $(e).mousedown (e) ->
+      this.preventDefault
+      selectedElement = this
+      clickPos.x = e.screenX
+      clickPos.y = e.screenY
+      false
+    e
+
   newComment = () ->
     e = document.createElement('span')
     $(e).addClass('element')
@@ -195,7 +213,6 @@ $ () ->
 
   clearStatementProblems = () ->
     $(activeStatement).removeClass('error')
-    $('#result').removeClass('error')
 
   statementProblem = () ->
     # TODO: Add more Params
@@ -267,7 +284,7 @@ $ () ->
         err = true
 
     if !err
-      $('#result').html(evaluateSolution(tokens))
+      $('.eval').html(evaluateSolution(tokens))
       console.log('no error')
     else
-      $('#result').html('!').addClass('error')
+      $('.eval').html('!')
