@@ -53,6 +53,10 @@
 .statement {
   padding: 0.7em 0.2em;
 }
+.fake-element {
+  color: #c4c4c4;
+  background-color: transparent;
+}
 .error {
   background-color: #ffa3a3;
 }

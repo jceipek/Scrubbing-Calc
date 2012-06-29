@@ -53,7 +53,7 @@ $ () ->
       return currElement
     lastNonComment = null
     while !lastNonComment? or $(lastNonComment).hasClass('comment')
-      lastNonComment = currElement.previousSibling
+      lastNonComment = currElement.previousElementSibling
     if $(lastNonComment).hasClass('number') or $(lastNonComment).hasClass('operator')
       return lastNonComment
     else
@@ -73,7 +73,7 @@ $ () ->
         activeStatement = $(cmp.previousElementSibling).children('.statement')[0]
         $(cmp).remove()
         $(statementToDelete.parentNode).remove()
-        currElement = activeStatement.lastElementChild
+        currElement = $(activeStatement).children('.element').last()
 
   $(window).keydown (e) ->
     # Handle special control keys.
@@ -153,7 +153,7 @@ $ () ->
       v = ((Number) $(selectedElement).html())
       d = Math.round((e.screenX - clickPos.x)) 
       $(selectedElement).html(d + v)
-      updateEvaluationForStatement(selectedElement.parentNode)
+      updateComp()
       clickPos.x = e.screenX
       clickPos.y = e.screenY
 
@@ -329,13 +329,49 @@ $ () ->
       $(statement).siblings('.eval').html('!')
     return res    
 
+  fakeComplete = (statement, val) ->
+    addOp = true
+    if $(statement).children('.element').length == 0
+      addOp = false
+    if addOp
+      e = document.createElement('span')
+      if val >= 0
+        $(e).html('+')
+      else
+        $(e).html('-')
+      $(e).addClass('fake-element')
+      $(e).addClass('operator')
+      $(e).appendTo(statement)
+
+    e = document.createElement('span')
+    if addOp
+      $(e).html(Math.abs(val)) 
+    else
+      $(e).html(val) 
+    $(e).addClass('fake-element')
+    $(e).addClass('number')
+    $(e).appendTo(statement)
+
   updateComp = () ->
-    val = null
+    oldVal = null
+    propagationVal = null
+    $('.fake-element').remove()    
     for statement in $(currComputation).children('.statement-container').children('.statement')
       newVal = updateEvaluationForStatement(statement)
-      if val? and newVal != val
-        console.log('Equation Inconsistency!')
-        $(statement).parent().prev().addClass('error')
-      else $(statement).parent().prev().removeClass('error')
-      val = newVal
+      if oldVal?
+        cmp = $(statement).parent().prev()
+        switch cmp.html()
+          when '='
+            if newVal != propagationVal
+              console.log('Equation Inconsistency!')
+              cmp.addClass('error')
+              if newVal?
+                diff = propagationVal - newVal
+                fakeComplete(statement, diff)
+                console.log('Diff: '+(diff))
+            else
+              cmp.removeClass('error')
+      else if newVal?
+        propagationVal = newVal
+      oldVal = newVal
 

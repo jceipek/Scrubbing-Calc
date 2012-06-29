@@ -2,7 +2,7 @@
 (function() {
 
   $(function() {
-    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currComputation, currElement, deleteCurrElementAndBacktrack, evaluateSolution, getEquationTokensForStatement, getLastNonCommentElement, newComment, newComparator, newNumber, newOperator, newStatement, selectedElement, statementProblem, updateComp, updateEvaluationForStatement;
+    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currComputation, currElement, deleteCurrElementAndBacktrack, evaluateSolution, fakeComplete, getEquationTokensForStatement, getLastNonCommentElement, newComment, newComparator, newNumber, newOperator, newStatement, selectedElement, statementProblem, updateComp, updateEvaluationForStatement;
     KEY_CODE = {
       'min_num': 48,
       'max_num': 57,
@@ -44,7 +44,7 @@
       }
       lastNonComment = null;
       while (!(lastNonComment != null) || $(lastNonComment).hasClass('comment')) {
-        lastNonComment = currElement.previousSibling;
+        lastNonComment = currElement.previousElementSibling;
       }
       if ($(lastNonComment).hasClass('number') || $(lastNonComment).hasClass('operator')) {
         return lastNonComment;
@@ -67,7 +67,7 @@
           activeStatement = $(cmp.previousElementSibling).children('.statement')[0];
           $(cmp).remove();
           $(statementToDelete.parentNode).remove();
-          return currElement = activeStatement.lastElementChild;
+          return currElement = $(activeStatement).children('.element').last();
         }
       }
     };
@@ -170,7 +170,7 @@
         v = Number($(selectedElement).html());
         d = Math.round(e.screenX - clickPos.x);
         $(selectedElement).html(d + v);
-        updateEvaluationForStatement(selectedElement.parentNode);
+        updateComp();
         clickPos.x = e.screenX;
         return clickPos.y = e.screenY;
       }
@@ -365,21 +365,63 @@
       }
       return res;
     };
+    fakeComplete = function(statement, val) {
+      var addOp, e;
+      addOp = true;
+      if ($(statement).children('.element').length === 0) {
+        addOp = false;
+      }
+      if (addOp) {
+        e = document.createElement('span');
+        if (val >= 0) {
+          $(e).html('+');
+        } else {
+          $(e).html('-');
+        }
+        $(e).addClass('fake-element');
+        $(e).addClass('operator');
+        $(e).appendTo(statement);
+      }
+      e = document.createElement('span');
+      if (addOp) {
+        $(e).html(Math.abs(val));
+      } else {
+        $(e).html(val);
+      }
+      $(e).addClass('fake-element');
+      $(e).addClass('number');
+      return $(e).appendTo(statement);
+    };
     return updateComp = function() {
-      var newVal, statement, val, _i, _len, _ref, _results;
-      val = null;
+      var cmp, diff, newVal, oldVal, propagationVal, statement, _i, _len, _ref, _results;
+      oldVal = null;
+      propagationVal = null;
+      $('.fake-element').remove();
       _ref = $(currComputation).children('.statement-container').children('.statement');
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         statement = _ref[_i];
         newVal = updateEvaluationForStatement(statement);
-        if ((val != null) && newVal !== val) {
-          console.log('Equation Inconsistency!');
-          $(statement).parent().prev().addClass('error');
-        } else {
-          $(statement).parent().prev().removeClass('error');
+        if (oldVal != null) {
+          cmp = $(statement).parent().prev();
+          switch (cmp.html()) {
+            case '=':
+              if (newVal !== propagationVal) {
+                console.log('Equation Inconsistency!');
+                cmp.addClass('error');
+                if (newVal != null) {
+                  diff = propagationVal - newVal;
+                  fakeComplete(statement, diff);
+                  console.log('Diff: ' + diff);
+                }
+              } else {
+                cmp.removeClass('error');
+              }
+          }
+        } else if (newVal != null) {
+          propagationVal = newVal;
         }
-        _results.push(val = newVal);
+        _results.push(oldVal = newVal);
       }
       return _results;
     };
