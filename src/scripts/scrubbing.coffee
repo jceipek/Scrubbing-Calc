@@ -60,16 +60,13 @@ $ () ->
       return null
 
   deleteCurrElementAndBacktrack = () ->
-    console.log('YEAH:')
     console.log(currElement)  
     if currElement?
       elementToDelete = currElement 
       currElement = currElement.previousElementSibling
       $(elementToDelete).remove()
     else
-      console.log('HEY')
       cmp = activeStatement.parentElement.previousElementSibling
-      console.log('NO')
       console.log(cmp)
       if $(cmp).hasClass('comparator')
         statementToDelete = activeStatement

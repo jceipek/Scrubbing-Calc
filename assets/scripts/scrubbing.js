@@ -54,16 +54,13 @@
     };
     deleteCurrElementAndBacktrack = function() {
       var cmp, elementToDelete, statementToDelete;
-      console.log('YEAH:');
       console.log(currElement);
       if (currElement != null) {
         elementToDelete = currElement;
         currElement = currElement.previousElementSibling;
         return $(elementToDelete).remove();
       } else {
-        console.log('HEY');
         cmp = activeStatement.parentElement.previousElementSibling;
-        console.log('NO');
         console.log(cmp);
         if ($(cmp).hasClass('comparator')) {
           statementToDelete = activeStatement;
