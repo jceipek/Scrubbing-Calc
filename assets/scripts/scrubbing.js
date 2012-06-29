@@ -2,7 +2,7 @@
 (function() {
 
   $(function() {
-    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currElement, deleteCurrElementAndBacktrack, evaluateSolution, getEquationTokens, getLastNonCommentElement, newComment, newComparator, newNumber, newOperator, newStatement, selectedElement, statementProblem, updateComp;
+    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currElement, deleteCurrElementAndBacktrack, evaluateSolution, getEquationTokensForStatement, getLastNonCommentElement, newComment, newComparator, newNumber, newOperator, newStatement, selectedElement, statementProblem, updateComp, updateEvaluationForStatement;
     KEY_CODE = {
       'min_num': 48,
       'max_num': 57,
@@ -159,7 +159,7 @@
         v = Number($(selectedElement).html());
         d = Math.round(e.screenX - clickPos.x);
         $(selectedElement).html(d + v);
-        updateComp();
+        updateEvaluationForStatement(selectedElement.parentNode);
         clickPos.x = e.screenX;
         return clickPos.y = e.screenY;
       }
@@ -245,16 +245,16 @@
       });
       return e;
     };
-    clearStatementProblems = function() {
-      return $(activeStatement).removeClass('error');
+    clearStatementProblems = function(statement) {
+      return $(statement).removeClass('error');
     };
-    statementProblem = function() {
-      return $(activeStatement).addClass('error');
+    statementProblem = function(statement) {
+      return $(statement).addClass('error');
     };
-    getEquationTokens = function() {
+    getEquationTokensForStatement = function(statement) {
       var e, eqnString, eqnTokens, lastToken, t, tokens, _i, _j, _len, _len1, _ref;
       eqnString = "";
-      _ref = $(activeStatement).children();
+      _ref = $(statement).children();
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         e = _ref[_i];
         if ($(e).hasClass('element') && !$(e).hasClass('comment')) {
@@ -294,11 +294,11 @@
       }
       return '';
     };
-    return updateComp = function() {
-      var err, lastNonComment, lastToken, t, tokens, _i, _len;
+    updateEvaluationForStatement = function(statement) {
+      var err, lastNonComment, lastToken, res, t, tokens, _i, _len;
       err = false;
-      clearStatementProblems();
-      tokens = getEquationTokens();
+      clearStatementProblems(statement);
+      tokens = getEquationTokensForStatement(statement);
       if (tokens.length > 0) {
         lastNonComment = null;
         lastToken = null;
@@ -308,17 +308,17 @@
             if (!lastNonComment) {
               if (t.type === 'operator') {
                 console.log("statements can't start with an operator");
-                statementProblem(t, 'A Number is Missing');
+                statementProblem(statement, t, 'A Number is Missing');
                 err = true;
               }
             } else {
               if (lastNonComment.type === 'operator' && t.type === 'operator') {
                 console.log("statements can't have two operators without a number between them");
-                statementProblem(lastNonComment, lastToken, t, 'A Number is Missing');
+                statementProblem(statement, lastNonComment, lastToken, t, 'A Number is Missing');
                 err = true;
               } else if (lastNonComment.type === 'number' && t.type === 'number') {
                 console.log("statements can't have two numbers without an operator between them");
-                statementProblem(lastNonComment, lastToken, t, 'An Operator is Missing');
+                statementProblem(statement, lastNonComment, lastToken, t, 'An Operator is Missing');
                 err = true;
               }
             }
@@ -328,16 +328,22 @@
         }
         if (lastNonComment.type === 'operator') {
           console.log("statements can't end with operators");
-          statementProblem(lastNonComment, 'A Number is Missing');
+          statementProblem(statement, lastNonComment, 'A Number is Missing');
           err = true;
         }
       }
+      res = null;
       if (!err) {
-        $(activeStatement).siblings('.eval').html(evaluateSolution(tokens));
-        return console.log('no error');
+        res = evaluateSolution(tokens);
+        $(statement).siblings('.eval').html(res);
+        console.log('no error');
       } else {
-        return $(activeStatement).siblings('.eval').html('!');
+        $(statement).siblings('.eval').html('!');
       }
+      return res;
+    };
+    return updateComp = function() {
+      return updateEvaluationForStatement(activeStatement);
     };
   });
 

@@ -145,7 +145,7 @@ $ () ->
       v = ((Number) $(selectedElement).html())
       d = Math.round((e.screenX - clickPos.x)) 
       $(selectedElement).html(d + v)
-      updateComp()
+      updateEvaluationForStatement(selectedElement.parentNode)
       clickPos.x = e.screenX
       clickPos.y = e.screenY
 
@@ -230,16 +230,16 @@ $ () ->
       false
     e
 
-  clearStatementProblems = () ->
-    $(activeStatement).removeClass('error')
+  clearStatementProblems = (statement) ->
+    $(statement).removeClass('error')
 
-  statementProblem = () ->
+  statementProblem = (statement) ->
     # TODO: Add more Params
-    $(activeStatement).addClass('error')
+    $(statement).addClass('error')
 
-  getEquationTokens = () ->
+  getEquationTokensForStatement = (statement) ->
     eqnString = ""
-    for e in $(activeStatement).children()
+    for e in $(statement).children()
       if $(e).hasClass('element') and !$(e).hasClass('comment')
         eqnString += $(e).html() + ' '
     tokens = eqnString.tokens()
@@ -264,11 +264,11 @@ $ () ->
     return e if e?
     return ''
 
-  updateComp = () ->
+  updateEvaluationForStatement = (statement) ->
     # TODO: When raising error, pass elements, not tokens to error function
     err = false
-    clearStatementProblems()
-    tokens = getEquationTokens()
+    clearStatementProblems(statement)
+    tokens = getEquationTokensForStatement(statement)
     if tokens.length > 0
       lastNonComment = null
       lastToken = null      
@@ -279,20 +279,20 @@ $ () ->
               # Invalid eqn
               # statements can't start with an operator
               console.log("statements can't start with an operator")
-              statementProblem(t, 'A Number is Missing')
+              statementProblem(statement, t, 'A Number is Missing')
               err = true 
           else 
             if lastNonComment.type == 'operator' and t.type == 'operator'
               # Invalid eqn
               # statements can't have two operators without a number between them
               console.log("statements can't have two operators without a number between them")
-              statementProblem(lastNonComment, lastToken, t, 'A Number is Missing')
+              statementProblem(statement, lastNonComment, lastToken, t, 'A Number is Missing')
               err = true            
             else if lastNonComment.type == 'number' and t.type == 'number'
               # Invalid eqn
               # statements can't have two numbers without an operator between them
               console.log("statements can't have two numbers without an operator between them")
-              statementProblem(lastNonComment, lastToken, t, 'An Operator is Missing')
+              statementProblem(statement, lastNonComment, lastToken, t, 'An Operator is Missing')
               err = true
           lastNonComment = t
         lastToken = t
@@ -300,11 +300,18 @@ $ () ->
         # Invalid eqn
         # statements can't end with operators
         console.log("statements can't end with operators")
-        statementProblem(lastNonComment, 'A Number is Missing')
+        statementProblem(statement, lastNonComment, 'A Number is Missing')
         err = true
 
+    res = null
     if !err
-      $(activeStatement).siblings('.eval').html(evaluateSolution(tokens))
+      res = evaluateSolution(tokens)
+      $(statement).siblings('.eval').html(res)
       console.log('no error')
     else
-      $(activeStatement).siblings('.eval').html('!')
+      $(statement).siblings('.eval').html('!')
+    return res    
+
+  updateComp = () ->
+    updateEvaluationForStatement(activeStatement)
+
