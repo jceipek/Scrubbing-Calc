@@ -53,13 +53,26 @@
       }
     };
     deleteCurrElementAndBacktrack = function() {
-      var elementToDelete;
-      elementToDelete = currElement;
-      currElement = currElement.previousSibling;
-      if (!$(currElement).hasClass('number') && !$(currElement).hasClass('operator') && !$(currElement).hasClass('comment')) {
-        currElement = null;
+      var cmp, elementToDelete, statementToDelete;
+      console.log('YEAH:');
+      console.log(currElement);
+      if (currElement != null) {
+        elementToDelete = currElement;
+        currElement = currElement.previousElementSibling;
+        return $(elementToDelete).remove();
+      } else {
+        console.log('HEY');
+        cmp = activeStatement.parentElement.previousElementSibling;
+        console.log('NO');
+        console.log(cmp);
+        if ($(cmp).hasClass('comparator')) {
+          statementToDelete = activeStatement;
+          activeStatement = $(cmp.previousElementSibling).children('.statement')[0];
+          $(cmp).remove();
+          $(statementToDelete.parentNode).remove();
+          return currElement = activeStatement.lastElementChild;
+        }
       }
-      return $(elementToDelete).remove();
     };
     $(window).keydown(function(e) {
       var v;
@@ -73,7 +86,7 @@
               } else {
                 deleteCurrElementAndBacktrack();
               }
-            } else if ($(currElement).hasClass('operator')) {
+            } else {
               deleteCurrElementAndBacktrack();
             }
             return updateComp();

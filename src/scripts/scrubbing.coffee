@@ -60,13 +60,23 @@ $ () ->
       return null
 
   deleteCurrElementAndBacktrack = () ->
-    elementToDelete = currElement 
-    currElement = currElement.previousSibling
-    if !$(currElement).hasClass('number') and 
-       !$(currElement).hasClass('operator') and 
-       !$(currElement).hasClass('comment')
-      currElement = null 
-    $(elementToDelete).remove()
+    console.log('YEAH:')
+    console.log(currElement)  
+    if currElement?
+      elementToDelete = currElement 
+      currElement = currElement.previousElementSibling
+      $(elementToDelete).remove()
+    else
+      console.log('HEY')
+      cmp = activeStatement.parentElement.previousElementSibling
+      console.log('NO')
+      console.log(cmp)
+      if $(cmp).hasClass('comparator')
+        statementToDelete = activeStatement
+        activeStatement = $(cmp.previousElementSibling).children('.statement')[0]
+        $(cmp).remove()
+        $(statementToDelete.parentNode).remove()
+        currElement = activeStatement.lastElementChild
 
   $(window).keydown (e) ->
     # Handle special control keys.
@@ -79,7 +89,7 @@ $ () ->
               $(currElement).html(v.substring(0,v.length-1))
             else
               deleteCurrElementAndBacktrack()
-          else if $(currElement).hasClass('operator')
+          else
             deleteCurrElementAndBacktrack()
           updateComp()
         when KEY_CODE['delete']
