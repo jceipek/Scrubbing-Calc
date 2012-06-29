@@ -263,6 +263,7 @@ $ () ->
     e = eval(eqnString) 
     return e if e?
     return ''
+
   updateComp = () ->
     # TODO: When raising error, pass elements, not tokens to error function
     err = false
@@ -303,7 +304,7 @@ $ () ->
         err = true
 
     if !err
-      $('.eval').html(evaluateSolution(tokens))
+      $(activeStatement).siblings('.eval').html(evaluateSolution(tokens))
       console.log('no error')
     else
-      $('.eval').html('!')
+      $(activeStatement).siblings('.eval').html('!')

@@ -333,10 +333,10 @@
         }
       }
       if (!err) {
-        $('.eval').html(evaluateSolution(tokens));
+        $(activeStatement).siblings('.eval').html(evaluateSolution(tokens));
         return console.log('no error');
       } else {
-        return $('.eval').html('!');
+        return $(activeStatement).siblings('.eval').html('!');
       }
     };
   });
