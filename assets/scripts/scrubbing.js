@@ -236,14 +236,23 @@
       activeStatement = newStatement();
       return currElement = null;
     };
-    newStatement = function() {
+    newStatement = function(isFake) {
       var container, evl, statement;
+      if (isFake == null) {
+        isFake = false;
+      }
       container = document.createElement('span');
-      $(container).addClass('statement-container');
+      if (isFake) {
+        $(container).addClass('statement-container');
+      } else {
+        $(container).addClass('fake-statement-container');
+      }
       statement = document.createElement('div');
       $(statement).addClass('statement');
-      evl = document.createElement('div');
-      $(evl).addClass('eval');
+      if (!isFake) {
+        evl = document.createElement('div');
+        $(evl).addClass('eval');
+      }
       $(statement).appendTo(container);
       $(evl).appendTo(container);
       $(container).appendTo(currComputation);
@@ -371,7 +380,8 @@
       }
     };
     fakeComplete = function(statement, val) {
-      var addOp, e;
+      var addOp, e, fakeStatement;
+      fakeStatement = newStatement(true);
       addOp = true;
       if ($(statement).children('.element').length === 0) {
         addOp = false;
@@ -385,7 +395,7 @@
         }
         $(e).addClass('fake-element');
         $(e).addClass('operator');
-        $(e).appendTo(statement);
+        $(e).appendTo(fakeStatement);
       }
       e = document.createElement('span');
       if (addOp) {
@@ -395,7 +405,8 @@
       }
       $(e).addClass('fake-element');
       $(e).addClass('number');
-      return $(e).appendTo(statement);
+      $(e).appendTo(fakeStatement);
+      return $(fakeStatement).insertAfter(statement);
     };
     return updateComp = function() {
       var cmp, diff, newVal, oldVal, propagationVal, statement, _i, _len, _ref, _ref1, _results;
