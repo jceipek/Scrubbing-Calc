@@ -319,6 +319,7 @@ $ () ->
         console.log("statements can't end with operators")
         statementProblem(statement, lastNonComment, 'A Number is Missing')
         err += 1
+        # TODO: fake solve this using a solver
         #if err == 1
         #switch lastNonComment.value    
         #completionNum = 
