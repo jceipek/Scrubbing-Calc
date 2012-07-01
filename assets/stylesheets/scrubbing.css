@@ -1,3 +1,9 @@
+.error {
+  background-color: #ffa3a3;
+}
+.comparator.error {
+  background-color: #fbffa3;
+}
 h1 {
   margin-top: 0.5em;
   margin-left: 1em;
@@ -52,8 +58,12 @@ h1 {
   text-align: center;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 0.3em;
+  margin-top: 0.1em;
+  padding-top: 0.2em;
   display: block;
+  border-color: #c4c4c4;
+  border-top-width: 1px;
+  border-top-style: solid;
 }
 .statement-container {
   display: inline-table;
@@ -67,9 +77,6 @@ h1 {
 .fake-element {
   color: #c4c4c4;
   background-color: transparent;
-}
-.error {
-  background-color: #ffa3a3;
 }
 footer {
   margin-top: 3em;
