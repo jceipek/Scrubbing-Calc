@@ -202,23 +202,17 @@ $ () ->
     $(e).addClass('comparator')
     $(e).insertAfter(activeStatement.parentNode)
     
-    $(e).mousedown (e) ->
-      this.preventDefault
-      selectedElement = this
-      clickPos.x = e.screenX
-      clickPos.y = e.screenY
-      false
-    e
-
-    activeStatement = newStatement()
+    activeStatementContainer = createNewStatementContainer()
+    activeStatement = $(activeStatementContainer).children('.statement')[0]
+    $(activeStatementContainer).appendTo(currComputation)
     currElement = null
 
-  newStatement = (isFake = false) ->
+  createNewStatementContainer = (isFake = false) ->
     container = document.createElement('span')
     if isFake
-      $(container).addClass('statement-container')
-    else
       $(container).addClass('fake-statement-container')
+    else
+      $(container).addClass('statement-container')      
     
     statement = document.createElement('div')
     $(statement).addClass('statement')
@@ -228,11 +222,12 @@ $ () ->
       $(evl).addClass('eval')
 
     $(statement).appendTo(container)
-    $(evl).appendTo(container)
+    if !isFake
+      $(evl).appendTo(container)
 
-    $(container).appendTo(currComputation)
+    #$(container).appendTo(currComputation)
 
-    return statement
+    return container #statement
 
   newComment = () ->
     e = document.createElement('span')
@@ -341,7 +336,9 @@ $ () ->
       return [res, null]
 
   fakeComplete = (statement, val) ->
-    fakeStatement = newStatement(true)
+    fakeStatementContainer = createNewStatementContainer(true)
+    fakeStatement = $(fakeStatementContainer).children('.statement')[0]
+    $(fakeStatementContainer).insertAfter(statement.parentElement)
     addOp = true
     if $(statement).children('.element').length == 0
       addOp = false
@@ -364,12 +361,12 @@ $ () ->
     $(e).addClass('number')
     $(e).appendTo(fakeStatement)
 
-    $(fakeStatement).insertAfter(statement)
+    $(fakeStatement).appendTo(fakeStatementContainer)
 
   updateComp = () ->
     oldVal = null
     propagationVal = null
-    $('.fake-element').remove()    
+    $('.fake-statement-container').remove()    
     for statement in $(currComputation).children('.statement-container').children('.statement')
       [newVal, diff] = updateEvaluationForStatement(statement, propagationVal)
       if oldVal?

@@ -2,7 +2,7 @@
 (function() {
 
   $(function() {
-    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, currComputation, currElement, deleteCurrElementAndBacktrack, evaluateSolution, fakeComplete, getEquationTokensForStatement, getLastNonCommentElement, newComment, newComparator, newNumber, newOperator, newStatement, selectedElement, statementProblem, updateComp, updateEvaluationForStatement;
+    var KEY_CODE, activeStatement, clearStatementProblems, clickPos, createNewStatementContainer, currComputation, currElement, deleteCurrElementAndBacktrack, evaluateSolution, fakeComplete, getEquationTokensForStatement, getLastNonCommentElement, newComment, newComparator, newNumber, newOperator, selectedElement, statementProblem, updateComp, updateEvaluationForStatement;
     KEY_CODE = {
       'min_num': 48,
       'max_num': 57,
@@ -218,34 +218,27 @@
       return e;
     };
     newComparator = function(cmp) {
-      var e;
+      var activeStatementContainer, e;
       e = document.createElement('span');
       $(e).html(cmp);
       $(e).addClass('element');
       $(e).addClass('comparator');
       $(e).insertAfter(activeStatement.parentNode);
-      $(e).mousedown(function(e) {
-        this.preventDefault;
-        selectedElement = this;
-        clickPos.x = e.screenX;
-        clickPos.y = e.screenY;
-        return false;
-      });
-      e;
-
-      activeStatement = newStatement();
+      activeStatementContainer = createNewStatementContainer();
+      activeStatement = $(activeStatementContainer).children('.statement')[0];
+      $(activeStatementContainer).appendTo(currComputation);
       return currElement = null;
     };
-    newStatement = function(isFake) {
+    createNewStatementContainer = function(isFake) {
       var container, evl, statement;
       if (isFake == null) {
         isFake = false;
       }
       container = document.createElement('span');
       if (isFake) {
-        $(container).addClass('statement-container');
-      } else {
         $(container).addClass('fake-statement-container');
+      } else {
+        $(container).addClass('statement-container');
       }
       statement = document.createElement('div');
       $(statement).addClass('statement');
@@ -254,9 +247,10 @@
         $(evl).addClass('eval');
       }
       $(statement).appendTo(container);
-      $(evl).appendTo(container);
-      $(container).appendTo(currComputation);
-      return statement;
+      if (!isFake) {
+        $(evl).appendTo(container);
+      }
+      return container;
     };
     newComment = function() {
       var e;
@@ -380,8 +374,10 @@
       }
     };
     fakeComplete = function(statement, val) {
-      var addOp, e, fakeStatement;
-      fakeStatement = newStatement(true);
+      var addOp, e, fakeStatement, fakeStatementContainer;
+      fakeStatementContainer = createNewStatementContainer(true);
+      fakeStatement = $(fakeStatementContainer).children('.statement')[0];
+      $(fakeStatementContainer).insertAfter(statement.parentElement);
       addOp = true;
       if ($(statement).children('.element').length === 0) {
         addOp = false;
@@ -406,13 +402,13 @@
       $(e).addClass('fake-element');
       $(e).addClass('number');
       $(e).appendTo(fakeStatement);
-      return $(fakeStatement).insertAfter(statement);
+      return $(fakeStatement).appendTo(fakeStatementContainer);
     };
     return updateComp = function() {
       var cmp, diff, newVal, oldVal, propagationVal, statement, _i, _len, _ref, _ref1, _results;
       oldVal = null;
       propagationVal = null;
-      $('.fake-element').remove();
+      $('.fake-statement-container').remove();
       _ref = $(currComputation).children('.statement-container').children('.statement');
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
