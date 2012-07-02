@@ -10,15 +10,19 @@ h1 {
   font: 4em Verdana, Arial, sans-serif;
   font-variant: small-caps;
 }
-.computation {
+.workspace {
   height: 80px;
   margin-left: 5em;
   margin-top: 1.5em;
   margin-bottom: 1.5em;
-  display: inline-table;
+  width: 1000px;
+  height: 5em;
+}
+.workspace:focus {
+  outline: 0px none transparent;
 }
 .number {
-  margin: 0.2em 0.1em;
+  padding: 0.2em 0.1em;
   width: auto;
   font-size: 2.5em;
   line-height: 1em;
@@ -26,21 +30,21 @@ h1 {
   background-color: #a8e2f8;
 }
 .operator {
-  margin: 0.2em 0.1em;
+  padding: 0.2em 0.1em;
   width: auto;
   font-size: 2.5em;
   line-height: 1em;
   padding: 0em 0.1em;
 }
 .comparator {
-  margin: 0.2em 0.1em;
+  padding: 0.2em 0.1em;
   width: auto;
   font-size: 2.5em;
   line-height: 1em;
   padding: 0em 0.1em;
 }
 .comment {
-  margin: 0.2em 0.1em;
+  padding: 0.2em 0.1em;
   width: auto;
   font-size: 2.5em;
   line-height: 1em;
@@ -48,7 +52,7 @@ h1 {
   color: #c4c4c4;
 }
 .eval {
-  margin: 0.2em 0.1em;
+  padding: 0.2em 0.1em;
   width: auto;
   font-size: 2.5em;
   line-height: 1em;
@@ -65,14 +69,8 @@ h1 {
   border-top-width: 1px;
   border-top-style: solid;
 }
-.statement-container {
-  display: inline-table;
-}
 .statement {
   padding: 0.7em 0.2em;
-}
-.fake-statement-container {
-  display: inline-table;
 }
 .fake-element {
   color: #c4c4c4;

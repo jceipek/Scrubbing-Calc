@@ -1,3 +1,42 @@
+KEY_CODE =
+  'min_num': 48
+  'max_num': 57
+  1: 49
+  2: 50
+  3: 51
+  4: 52
+  5: 53
+  6: 54
+  7: 55
+  8: 56
+  9: 57
+  0: 48
+  'backspace': 8
+  'delete': 46
+  'minus': 45 
+  'plus': 43 # Needs Shift
+  'divide': 47
+  'equals': 61
+  'multiply': 42 # Needs Shift
+  'paren_open' : 57 # Needs Shift
+  'paren_close' : 48 # Needs Shift
+  'space': 32
+  'return': 13
+  'esc': 27
+
+workspace = $('.workspace')[0]
+
+$(workspace).keydown (e) ->
+  if e.which == KEY_CODE['return']
+    e.preventDefault()
+
+$(workspace).keyup (e) ->
+  postProcess = () ->
+    $(workspace).find('br').remove()
+    console.log($(workspace).html()) 
+  window.setTimeout postProcess 0.01
+
+###
 $ () ->
   
   KEY_CODE =
@@ -386,3 +425,4 @@ $ () ->
         propagationVal = newVal
       oldVal = newVal
 
+###

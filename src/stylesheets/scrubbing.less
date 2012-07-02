@@ -1,5 +1,5 @@
 .base-element () {
-  margin: 0.2em 0.1em; 
+  padding: 0.2em 0.1em;
   width: auto;
   font-size: 2.5em;
   line-height: 1em;
@@ -21,12 +21,17 @@ h1 {
   font-variant: small-caps;
 }
 
-.computation {
+.workspace {
   height: 80px; 
   margin-left: 5em;
   margin-top: 1.5em;  
   margin-bottom: 1.5em;  
-  display: inline-table;
+  width: 1000px;
+  height: 5em;
+}
+
+.workspace:focus {
+  outline:0px none transparent;
 }
 
 .number {
@@ -63,7 +68,7 @@ h1 {
 }
 
 .statement-container {
-  display: inline-table;
+  //display: inline-table;
 }
 
 .statement {
@@ -71,7 +76,7 @@ h1 {
 }
 
 .fake-statement-container {
-   display: inline-table; 
+   //display: inline-table; 
 }
 
 .fake-element {
