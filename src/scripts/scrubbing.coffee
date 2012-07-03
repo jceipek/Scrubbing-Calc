@@ -24,17 +24,59 @@ KEY_CODE =
   'return': 13
   'esc': 27
 
+# Based on method by Tim Down: http://stackoverflow.com/questions/4811822/get-a-ranges-start-and-end-offsets-relative-to-its-parent-container/4812022#4812022
+getCaretCharacterOffsetWithin = (element) ->
+  caretOffset = 0
+  if typeof window.getSelection != "undefined"
+    range = window.getSelection().getRangeAt(0)
+    preCaretRange = range.cloneRange()
+    preCaretRange.selectNodeContents(element)
+    preCaretRange.setEnd(range.endContainer, range.endOffset)
+    caretOffset = preCaretRange.toString().length
+  else if typeof document.selection != "undefined" and document.selection.type != "Control"
+    textRange = document.selection.createRange()
+    preCaretTextRange = document.body.createTextRange()
+    preCaretTextRange.moveToElementText(element)
+    preCaretTextRange.setEndPoint("EndToEnd", textRange)
+    caretOffset = preCaretTextRange.text.length
+  return caretOffset
+
+
 workspace = $('.workspace')[0]
 
 $(workspace).keydown (e) ->
   if e.which == KEY_CODE['return']
     e.preventDefault()
+    # Create a new computation
 
 $(workspace).keyup (e) ->
   postProcess = () ->
-    $(workspace).find('br').remove()
-    console.log($(workspace).html()) 
-  window.setTimeout postProcess 0.01
+    # TODO: Delete helpers
+    raw = $(workspace).text()
+    $(workspace).html('')    
+    out = ""
+    index = 0
+    tokens = raw.tokens('(-+*/)')
+    for t in tokens
+      switch t.type
+        when 'number'
+          c = 'number'
+        when 'operator'
+          c = 'operator'
+        when 'name'
+          c = 'comment'
+      e = document.createElement('span')
+      $(e).addClass(c)
+      $(e).html(t.value)
+      $(e).appendTo(workspace)
+      out += e
+      index += t.value.length
+
+    # TODO: Add helpers back in
+  #window.setTimeout postProcess 0
+  postProcess()
+
+
 
 ###
 $ () ->
