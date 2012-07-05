@@ -46,6 +46,8 @@ $(workspace)
   .on 'change', ->
       raw = $(workspace).text()
       
+      if not $(workspace).children('.computation')
+        e = document.createElement('span')
       console.log(SELECTION.getStart())
 
       ###
