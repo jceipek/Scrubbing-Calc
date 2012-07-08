@@ -1,3 +1,4 @@
+
 KEY_CODE =
   'min_num': 48
   'max_num': 57
@@ -26,6 +27,9 @@ KEY_CODE =
 
 SELECTION = new Selection(window)
 workspace = $('.workspace')[0]
+
+$(workspace).focus()
+
 
 $(workspace).keydown (e) ->
   if e.which == KEY_CODE['return']

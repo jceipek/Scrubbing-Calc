@@ -33,6 +33,8 @@
 
   workspace = $('.workspace')[0];
 
+  $(workspace).focus();
+
   $(workspace).keydown(function(e) {
     if (e.which === KEY_CODE['return']) {
       return e.preventDefault();
@@ -53,8 +55,11 @@
       return $this;
     }
   }).on('change', function() {
-    var raw;
+    var e, raw;
     raw = $(workspace).text();
+    if (!$(workspace).children('.computation')) {
+      e = document.createElement('span');
+    }
     return console.log(SELECTION.getStart());
     /*
           $(workspace).html('')    
