@@ -54,6 +54,8 @@ $(workspace)
         e = document.createElement('span')
       console.log(SELECTION.getStart())
 
+$(workspace)
+
       ###
       $(workspace).html('')    
       out = ""
