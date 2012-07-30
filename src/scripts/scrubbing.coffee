@@ -31,15 +31,13 @@ fixed_point = (f, first_guess) ->
 # Given a single-variable function, f, return the derivative, f'
 # Actually returns a function!
 deriv = (f) ->
-  (x) ->
-    ( f(x + dx) - f(x) ) / dx
+  (x) -> ( f(x + dx) - f(x) ) / dx
 
 # Given a single-variable function, f, return a function, g
 # When g(x) is given an x-value, it returns a value that is a better
 # guess than the x value it was given.
 newton_transform = (f) ->
-  (x) ->
-    x - ( f(x) / deriv(f)(x) )
+  (x) -> x - ( f(x) / deriv(f)(x) )
 
 # Given a single-variable function, f, and an initial guess, use newton's method
 # to approximate a solution to the function close to the guess.
@@ -47,8 +45,7 @@ newtons_method = (f, guess) ->
   fixed_point(newton_transform(f), guess)
 
 # A simple test function for newton's method
-y = (x) ->
-  (x - 20) * (x + 10)
+y = (x) -> (x - 20) * (x + 10)
 
 # example use of newton's method
 console.log( "The positive root of y: " + newtons_method(y,40) )
