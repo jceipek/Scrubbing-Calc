@@ -8,7 +8,7 @@ dx = 0.000001
 
 # How little does the next result in Newton's method
 # need to change in order to consider it stable?
-tolerance = 0.00001
+tolerance = 0.0001
 
 # Find the "fixed point" for a given single-variable function, f
 # and a given first_guess for the function's input
@@ -17,35 +17,42 @@ tolerance = 0.00001
 # the next iteration doesn't change very much. 
 fixed_point = (f, first_guess) ->
   close_enough = (v1, v2) ->
-    return Math.abs(v1 - v2) < tolerance
+    Math.abs(v1 - v2) < tolerance
 
   try_it = (guess) ->
     next = f(guess)
     if close_enough(guess, next)
-      return next
+      next
     else
-      return try_it(next)
+      try_it(next)
 
-  return try_it(first_guess)
+  try_it(first_guess)
 
 # Given a single-variable function, f, return the derivative, f'
 # Actually returns a function!
 deriv = (f) ->
-  return (x) ->
-    return ( f(x + dx) - f(x) ) / dx
+  (x) ->
+    ( f(x + dx) - f(x) ) / dx
 
 # Given a single-variable function, f, return a function, g
 # When g(x) is given an x-value, it returns a value that is a better
 # guess than the x value it was given.
 newton_transform = (f) ->
-  return (x) ->
-    return x - ( f(x) / deriv(f)(x) )
+  (x) ->
+    x - ( f(x) / deriv(f)(x) )
 
 # Given a single-variable function, f, and an initial guess, use newton's method
 # to approximate a solution to the function close to the guess.
 newtons_method = (f, guess) ->
-  return fixed_point(newton_transform(f), guess)
+  fixed_point(newton_transform(f), guess)
 
+# A simple test function for newton's method
+y = (x) ->
+  (x - 20) * (x + 10)
+
+# example use of newton's method
+console.log( "The positive root of y: " + newtons_method(y,40) )
+console.log( "The negative root of y: " + newtons_method(y, -1420) )
 
 KEY_CODE =
   'min_num': 48
@@ -109,6 +116,7 @@ $(workspace)
       addedText = $(node).text()[location-1] # Only works if one character was added, for now
       handle addedText
       #console.log([node, location])
+
 
 
 #$(workspace)
