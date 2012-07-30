@@ -36,6 +36,11 @@ $(workspace).keydown (e) ->
     e.preventDefault()
     # Create a new computation
 
+handle = (addedLetter) ->
+  if KEY_CODE['min_num'] <= addedLetter.charCodeAt(0) <= KEY_CODE['max_num']
+    console.log('A Number')
+
+
 $(workspace)
   .on 'focus', ->
     $this = $(this)
@@ -52,7 +57,14 @@ $(workspace)
       
       if not $(workspace).children('.computation')
         e = document.createElement('span')
-      console.log(SELECTION.getStart())
+      [node, location] = SELECTION.getStart()
+      addedText = $(node).text()[location-1] # Only works if one character was added, for now
+      handle addedText
+      #console.log([node, location])
+
+
+
+#$(workspace)
 
       ###
       $(workspace).html('')    
