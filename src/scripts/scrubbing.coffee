@@ -3,7 +3,7 @@ Newton's Method
 Single variable
 ###
 
-# "a small number" for the dirivitive function
+# "a small number" for the derivative function
 dx = 0.000001
 
 # How little does the next result in Newton's method
