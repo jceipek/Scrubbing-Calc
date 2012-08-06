@@ -82,16 +82,21 @@ workspace = $('.workspace')[0]
 
 $(workspace).focus()
 
-
 $(workspace).keydown (e) ->
   if e.which == KEY_CODE['return']
     e.preventDefault()
     # Create a new computation
 
 handle = (addedLetter) ->
-  if KEY_CODE['min_num'] <= addedLetter.charCodeAt(0) <= KEY_CODE['max_num']
-    console.log('A Number')
+  if addedLetter?
+    if KEY_CODE['min_num'] <= addedLetter.charCodeAt(0) <= KEY_CODE['max_num']
+      [node, location] = SELECTION.getStart()
+      e = document.createElement('span')
+      $(e).html(addedLetter)
+      $(e).addClass('number').insertAfter($(node))
+      SELECTION.setSelection(e,1,e,1)
 
+    console.log('A Number')
 
 $(workspace)
   .on 'focus', ->
@@ -111,10 +116,9 @@ $(workspace)
         e = document.createElement('span')
       [node, location] = SELECTION.getStart()
       addedText = $(node).text()[location-1] # Only works if one character was added, for now
+      #TODO: Kill new char
       handle addedText
       #console.log([node, location])
-
-
 
 #$(workspace)
 
@@ -558,5 +562,4 @@ $ () ->
       else if newVal?
         propagationVal = newVal
       oldVal = newVal
-
 ###
