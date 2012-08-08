@@ -87,16 +87,27 @@ $(workspace).keydown (e) ->
     e.preventDefault()
     # Create a new computation
 
-handle = (addedLetter) ->
+wrapNode = (node, location, type) ->
+  e = $(node.splitText(location - 1)).wrap('<span class="' + type + '">').parent()
+  e.insertAfter(node.parentNode)
+  newTextNode = e.contents()[0]
+  SELECTION.setSelection(newTextNode, 1, newTextNode, 1) 
+
+handle = (node, location) ->
+  addedLetter = $(node).text()[location-1]
   if addedLetter?
     if KEY_CODE['min_num'] <= addedLetter.charCodeAt(0) <= KEY_CODE['max_num']
-      [node, location] = SELECTION.getStart()
-      e = document.createElement('span')
-      $(e).html(addedLetter)
-      $(e).addClass('number').insertAfter($(node))
-      SELECTION.setSelection(e,1,e,1)
-
-    console.log('A Number')
+      if not ($(node.parentNode).hasClass('number') or $(node.parentNode).hasClass('operator'))
+        e = $(node).wrap('<span class="number">')
+      else if not $(node.parentNode).hasClass('number') 
+        wrapNode node, location, 'number'        
+        #console.log('HAI') 
+      # Else will just append to existing number
+    else
+      if not ($(node.parentNode).hasClass('number') or $(node.parentNode).hasClass('operator'))
+        wrapNode node, location, 'operator'
+      else if not $(node.parentNode).hasClass('operator') 
+        wrapNode node, location, 'operator'  
 
 $(workspace)
   .on 'focus', ->
@@ -115,10 +126,8 @@ $(workspace)
       if not $(workspace).children('.computation')
         e = document.createElement('span')
       [node, location] = SELECTION.getStart()
-      addedText = $(node).text()[location-1] # Only works if one character was added, for now
-      #TODO: Kill new char
-      handle addedText
-      #console.log([node, location])
+      
+      handle node, location
 
 #$(workspace)
 
