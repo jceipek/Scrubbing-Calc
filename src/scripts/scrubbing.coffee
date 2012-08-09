@@ -97,17 +97,23 @@ handle = (node, location) ->
   addedLetter = $(node).text()[location-1]
   if addedLetter?
     if KEY_CODE['min_num'] <= addedLetter.charCodeAt(0) <= KEY_CODE['max_num']
-      if not ($(node.parentNode).hasClass('number') or $(node.parentNode).hasClass('operator'))
+      if not ($(node.parentNode).hasClass('number') or $(node.parentNode).hasClass('operator') or $(node.parentNode).hasClass('comment'))
         e = $(node).wrap('<span class="number">')
       else if not $(node.parentNode).hasClass('number') 
         wrapNode node, location, 'number'        
-        #console.log('HAI') 
       # Else will just append to existing number
-    else
-      if not ($(node.parentNode).hasClass('number') or $(node.parentNode).hasClass('operator'))
-        wrapNode node, location, 'operator'
+    else if addedLetter.charCodeAt(0) in [KEY_CODE['plus'], KEY_CODE['minus'], KEY_CODE['divide'], KEY_CODE['multiply']]
+      if not ($(node.parentNode).hasClass('number') or $(node.parentNode).hasClass('operator') or $(node.parentNode).hasClass('comment'))
+        e = $(node).wrap('<span class="operator">')
+        #wrapNode node, location, 'operator'
       else if not $(node.parentNode).hasClass('operator') 
-        wrapNode node, location, 'operator'  
+        wrapNode node, location, 'operator' 
+    else
+      if not ($(node.parentNode).hasClass('number') or $(node.parentNode).hasClass('operator') or $(node.parentNode).hasClass('comment'))
+        e = $(node).wrap('<span class="comment">')
+        #wrapNode node, location, 'operator'
+      else if not $(node.parentNode).hasClass('comment') 
+        wrapNode node, location, 'comment' 
 
 $(workspace)
   .on 'focus', ->
