@@ -1,0 +1,25 @@
+Organization:
+  A workspace contains computations
+  A computation consists of one or more statements separated by comparators.
+  Two statements not separated by comparators are considered to be two separate computations.
+  A statement consists of numbers, operations, and comments
+  Numbers can be positive or negative and can optionally have prefix or suffix units.
+    If units are incompatible, they will simply not combine-no error will result
+      Units could be converted into comments if incompatible, or the expression could remain symbolic
+    Prefix units include $,€, etc...
+    Suffix units include the SI and Imperial system as well as currencies
+      Suffix units can be abbreviated, but they will automatically expand as soon as their meaning can be inferred.
+  Operators can be unary or binary
+    Binary operators can be +, -, /, *, %, mod, in (when the next element is a unit)
+  Comparators can be =, <, >, <=, >=
+  Comments can come between numbers and operators without changing the interpretation of a computation
+
+Computations can reference other computations by linking two numbers together.
+ctrl-clicking on a number will unlock it
+cmd-clicking (on OSX) and shift-clicking (on Windows) on a number adds it to the current selection
+ctrl-clicking on an element that is part of the current selection will unlock and link all of those numbers
+You can also drag link two numbers as shown in Bret Victor's video
+Undo will undo typing as normal.
+Scrubbing can be reverted with one undo rather than an undo per update of the scrub.
+Double-click on a portion of a computation selects that portion. Triple-click on a part of a computation selects the whole computation. Quadruple click selects every computation in the workspace.
+Click and drag inside a number to scrub. No modifier needs to be held down. Click and dragging from the left or right of the number will result in a selection instead. Numbers will be big enough such that this isn't a problem.
