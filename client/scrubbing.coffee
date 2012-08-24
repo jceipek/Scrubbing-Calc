@@ -117,6 +117,7 @@ handle = (node, location) ->
 
 $(workspace)
   .on 'focus', ->
+  
     $this = $(this)
     $this.data 'before', $this.html()
     return $this
@@ -134,7 +135,6 @@ $(workspace)
       [node, location] = SELECTION.getStart()
       
       handle node, location
-
 #$(workspace)
 
       ###
