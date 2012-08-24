@@ -1,0 +1,22 @@
+ometa Calc {
+  digit         = ^digit:d                                                               -> d.digitValue(),
+  anyWhitespace = ' '*,
+  number        = number:n digit:d                                                       -> (n * 10 + d)
+                | digit,
+  unit          = 'm',
+  unitNum       = number anyWhitespace unit,
+  addExpr       = addExpr:x anyWhitespace '+' anyWhitespace mulExpr:y                    -> (x + y)
+                | addExpr:x anyWhitespace '-' anyWhitespace mulExpr:y                    -> (x - y)
+                | mulExpr,
+  mulExpr       = mulExpr:x anyWhitespace '*' anyWhitespace expExpr:y                    -> (x * y)
+                | mulExpr:x expExpr:y -> (x*y)
+                | mulExpr:x anyWhitespace '/' anyWhitespace expExpr:y                    -> (x / y)
+                | expExpr,
+  expExpr       = expExpr:x anyWhitespace '^' anyWhitespace primExpr:y                   -> (Math.pow(x,y))
+                | primExpr,
+  primExpr      = anyWhitespace '(' anyWhitespace expr:x anyWhitespace ')' anyWhitespace -> x
+                | number,
+  expr          = addExpr
+}
+
+Calc.matchAll("6*32(4+4^2)", 'expr')
